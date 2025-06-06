@@ -1,0 +1,24 @@
+{
+    "name": "yceruto/formflow-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "description": "Create and manage multistep forms",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.1",
+        "symfony/framework-bundle": "^6.4|^7.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Yceruto\\FormflowBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yceruto\\FormflowBundle\\Tests\\": "tests/"
+        }
+    }
+}
