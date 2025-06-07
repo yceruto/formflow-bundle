@@ -11,7 +11,10 @@ class MultistepDto
     public ?string $field11 = null;
 
     // step 2
+    #[Assert\NotBlank(groups: ['step2'])]
     public ?string $field21 = null;
+
+    #[Assert\NotBlank(groups: ['step2'])]
     public ?string $field22 = null;
 
     // step 3
