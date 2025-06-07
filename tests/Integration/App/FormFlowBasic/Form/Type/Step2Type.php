@@ -14,9 +14,9 @@ class Step2Type extends AbstractType
     {
         $builder->add('field21');
         $builder->add('field22');
+
         $builder->add('skip', FormFlowActionType::class, [
             'action' => 'next',
-            'label' => 'Skip',
             'clear_submission' => true,
         ]);
     }

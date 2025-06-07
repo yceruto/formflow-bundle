@@ -145,6 +145,15 @@ class FormFlowBasicTest extends AbstractWebTestCase
 
         self::assertStringContainsString('>Step2<', $crawler->html());
 
+        $crawler = $client->submit($crawler->selectButton('Next')->form(), [
+            'multistep[step2][field21]' => '',
+            'multistep[step2][field22]' => '',
+            'multistep[navigator][next]' => '',
+        ]);
+
+        self::assertSame(422, $client->getInternalResponse()->getStatusCode());
+        self::assertStringContainsString('>Step2<', $crawler->html());
+
         $crawler = $client->submit($crawler->selectButton('Skip')->form(), [
             'multistep[step2][skip]' => '',
         ]);
