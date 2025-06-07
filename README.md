@@ -1,4 +1,7 @@
-# FormflowBundle
+# FormFlowBundle
+
+Create and manage multistep forms. Backported library for https://github.com/symfony/symfony/pull/60212 
+compatible with Symfony 6.4 (LTS)
 
 ## Installation
 
@@ -35,6 +38,6 @@ in the `config/bundles.php` file of your project:
 
 return [
     // ...
-    Yceruto\FormflowBundle\FormflowBundle::class => ['all' => true],
+    Yceruto\FormflowBundle\FormFlowBundle::class => ['all' => true],
 ];
 ```
