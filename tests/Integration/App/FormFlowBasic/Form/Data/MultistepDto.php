@@ -2,9 +2,12 @@
 
 namespace Yceruto\FormFlowBundle\Tests\Integration\App\FormFlowBasic\Form\Data;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class MultistepDto
 {
     // step 1
+    #[Assert\NotBlank(groups: ['step1'])]
     public ?string $field11 = null;
 
     // step 2

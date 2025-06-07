@@ -1,6 +1,7 @@
 framework:
     http_method_override: false
     handle_all_throwables: true
+    validation: true
     secret: test
     router:
         resource: '%kernel.project_dir%/%kernel.test_case%/routes.yaml'

@@ -133,6 +133,34 @@ class FormFlowBasicTest extends AbstractWebTestCase
         self::assertSame('/basic/success', $client->getInternalResponse()->getHeader('Location'));
     }
 
+    public function testValidationError(): void
+    {
+        $client = self::createClient();
+        $crawler = $client->request('GET', '/basic');
+
+        self::assertSame(200, $client->getInternalResponse()->getStatusCode());
+        self::assertStringContainsString('>Step1<', $crawler->html());
+        self::assertSameFileContent('step1.html', $client->getInternalResponse()->getContent());
+
+        $crawler = $client->submit($crawler->selectButton('Next')->form(), [
+            'multistep[step1][field11]' => '',
+            'multistep[navigator][next]' => '',
+        ]);
+
+        self::assertSame(422, $client->getInternalResponse()->getStatusCode());
+        self::assertStringContainsString('>Step1<', $crawler->html());
+        self::assertSameFileContent('step1_error.html', $crawler->filter('body')->html());
+
+        $crawler = $client->submit($crawler->selectButton('Next')->form(), [
+            'multistep[step1][field11]' => 'foo',
+            'multistep[navigator][next]' => '',
+        ]);
+
+        self::assertSame(200, $client->getInternalResponse()->getStatusCode());
+        self::assertStringContainsString('>Step2<', $crawler->html());
+        self::assertSameFileContent('step2.html', $crawler->filter('body')->html());
+    }
+
     private static function assertSameFileContent(string $expectedFilename, string $actualContent, bool $save = false): void
     {
         $expectedContent = self::getOutputFileContent($expectedFilename, $actualContent, $save);
