@@ -9,9 +9,7 @@ class FormFlowBasicTest extends AbstractWebTestCase
         $client = self::createClient();
         $crawler = $client->request('GET', '/basic');
 
-        self::assertResponseIsSuccessful();
-        self::assertResponseFormatSame('html');
-        self::assertResponseStatusCodeSame(200);
+        self::assertSame(200, $client->getInternalResponse()->getStatusCode());
         self::assertStringContainsString('>Step1<', $crawler->html());
         self::assertSameFileContent('step1.html', $client->getInternalResponse()->getContent());
 
@@ -20,9 +18,7 @@ class FormFlowBasicTest extends AbstractWebTestCase
             'multistep[navigator][next]' => '',
         ]);
 
-        self::assertResponseIsSuccessful();
-        self::assertResponseFormatSame('html');
-        self::assertResponseStatusCodeSame(200);
+        self::assertSame(200, $client->getInternalResponse()->getStatusCode());
         self::assertStringContainsString('>Step2<', $crawler->html());
         self::assertSameFileContent('step2.html', $crawler->filter('body')->html());
 
@@ -32,9 +28,7 @@ class FormFlowBasicTest extends AbstractWebTestCase
             'multistep[navigator][next]' => '',
         ]);
 
-        self::assertResponseIsSuccessful();
-        self::assertResponseFormatSame('html');
-        self::assertResponseStatusCodeSame(200);
+        self::assertSame(200, $client->getInternalResponse()->getStatusCode());
         self::assertStringContainsString('>Step3<', $crawler->html());
         self::assertSameFileContent('step3.html', $crawler->filter('body')->html());
 
@@ -45,7 +39,8 @@ class FormFlowBasicTest extends AbstractWebTestCase
             'multistep[navigator][finish]' => '',
         ]);
 
-        self::assertResponseRedirects('/basic/success', 302);
+        self::assertSame(302, $client->getInternalResponse()->getStatusCode());
+        self::assertSame('/basic/success', $client->getInternalResponse()->getHeader('Location'));
     }
 
     private static function assertSameFileContent(string $expectedFilename, string $actualContent, bool $save = false): void

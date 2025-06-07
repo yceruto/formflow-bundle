@@ -6,7 +6,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=8.3",
-        "symfony/form": "^7.3",
+        "symfony/form": "^6.4|^7.0",
         "symfony/framework-bundle": "^6.4|^7.0"
     },
     "require-dev": {
