@@ -6,19 +6,28 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=8.1",
+        "symfony/form": "^7.3",
         "symfony/framework-bundle": "^6.4|^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.2",
+        "symfony/browser-kit": "^7.3",
+        "symfony/css-selector": "^7.3",
+        "symfony/twig-bundle": "^7.3",
+        "symfony/validator": "^7.3",
+        "symfony/yaml": "^7.3"
     },
     "config": {
         "sort-packages": true
     },
     "autoload": {
         "psr-4": {
-            "Yceruto\\FormflowBundle\\": "src/"
+            "Yceruto\\FormFlowBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yceruto\\FormflowBundle\\Tests\\": "tests/"
+            "Yceruto\\FormFlowBundle\\Tests\\": "tests/"
         }
     }
 }

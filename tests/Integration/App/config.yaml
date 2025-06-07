@@ -1,0 +1,24 @@
+framework:
+    http_method_override: false
+    handle_all_throwables: true
+    secret: test
+    router:
+        resource: '%kernel.project_dir%/%kernel.test_case%/routes.yaml'
+        utf8: true
+    test: true
+    default_locale: en
+    enabled_locales: ['en']
+    session:
+        handler_id: null
+        storage_factory_id: session.storage.factory.mock_file
+        cookie_secure: auto
+        cookie_samesite: lax
+    php_errors:
+        log: true
+
+twig:
+    default_path: '%kernel.project_dir%/Templates'
+
+services:
+    logger:
+        class: Psr\Log\NullLogger

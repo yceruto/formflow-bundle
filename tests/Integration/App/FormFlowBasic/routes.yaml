@@ -1,0 +1,5 @@
+controllers:
+    resource:
+        path: ./Controller/
+        namespace: Yceruto\FormFlowBundle\Tests\Integration\App\FormFlowBasic\Controller
+    type: attribute
