@@ -133,6 +133,34 @@ class FormFlowBasicTest extends AbstractWebTestCase
         self::assertSame('/basic/success', $client->getInternalResponse()->getHeader('Location'));
     }
 
+    public function testSkipStep(): void
+    {
+        $client = self::createClient();
+        $crawler = $client->request('GET', '/basic');
+
+        $crawler = $client->submit($crawler->selectButton('Next')->form(), [
+            'multistep[step1][field11]' => 'foo',
+            'multistep[navigator][next]' => '',
+        ]);
+
+        self::assertStringContainsString('>Step2<', $crawler->html());
+
+        $crawler = $client->submit($crawler->selectButton('Skip')->form(), [
+            'multistep[step2][skip]' => '',
+        ]);
+
+        self::assertSame(200, $client->getInternalResponse()->getStatusCode());
+        self::assertStringContainsString('>Step3<', $crawler->html());
+
+        $crawler = $client->submit($crawler->selectButton('Back')->form(), [
+            'multistep[navigator][back]' => '',
+        ]);
+
+        self::assertStringContainsString('>Step2<', $crawler->html());
+        self::assertStringNotContainsString('value="foo"', $crawler->html());
+        self::assertStringNotContainsString('value="bar"', $crawler->html());
+    }
+
     public function testValidationError(): void
     {
         $client = self::createClient();
