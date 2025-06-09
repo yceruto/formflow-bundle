@@ -46,10 +46,6 @@ class FormFlow extends Form implements FormFlowInterface
 
         $this->setClickedActionButton($submittedData, $this);
 
-        if ($this->clickedActionButton?->isClearSubmission()) {
-            $submittedData = [];
-        }
-
         parent::submit($submittedData, $clearMissing);
 
         if (!$this->clickedActionButton || !$this->isSubmitted() || !$this->isValid()) {

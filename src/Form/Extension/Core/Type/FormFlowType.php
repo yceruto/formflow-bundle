@@ -4,6 +4,8 @@ namespace Yceruto\FormFlowBundle\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
@@ -38,6 +40,8 @@ class FormFlowType extends AbstractFlowType
 
         $builder->setDataStorage($options['data_storage'] ?? new NullDataStorage());
         $builder->setStepAccessor($options['step_accessor']);
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, $this->onPreSubmit(...), -100);
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
@@ -104,5 +108,15 @@ class FormFlowType extends AbstractFlowType
     public function getParent(): string
     {
         return FormType::class;
+    }
+
+    public function onPreSubmit(FormEvent $event): void
+    {
+        /** @var FormFlowInterface $flow */
+        $flow = $event->getForm();
+
+        if ($flow->getClickedActionButton()?->isClearSubmission()) {
+            $event->setData([]);
+        }
     }
 }
