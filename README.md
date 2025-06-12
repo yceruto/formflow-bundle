@@ -14,7 +14,7 @@ of the Composer documentation.
 Open a command console, enter your project directory and execute:
 
 ```console
-$ composer require yceruto/formflow-bundle
+composer require yceruto/formflow-bundle
 ```
 
 ### Applications that don't use Symfony Flex
@@ -25,7 +25,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```console
-$ composer require yceruto/formflow-bundle
+composer require yceruto/formflow-bundle
 ```
 
 #### Step 2: Enable the Bundle
