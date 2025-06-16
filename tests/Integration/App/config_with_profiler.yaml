@@ -1,0 +1,6 @@
+imports:
+    - './config.yaml'
+
+framework:
+    profiler:
+        enabled: true

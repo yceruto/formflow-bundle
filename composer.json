@@ -16,6 +16,7 @@
         "symfony/css-selector": "^7.3",
         "symfony/translation": "^7.3",
         "symfony/twig-bundle": "^7.3",
+        "symfony/web-profiler-bundle": "^7.3",
         "symfony/yaml": "^7.3"
     },
     "config": {

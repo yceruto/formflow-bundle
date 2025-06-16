@@ -16,6 +16,7 @@ framework:
         cookie_samesite: lax
     php_errors:
         log: true
+    profiler: false
 
 twig:
     default_path: '%kernel.project_dir%/Templates'

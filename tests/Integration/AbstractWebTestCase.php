@@ -55,7 +55,7 @@ class AbstractWebTestCase extends WebTestCase
         }
 
         return new $class(
-            static::getVarDir(),
+            $options['var_dir'] ?? static::getVarDir(),
             $options['test_case'],
             $options['root_config'] ?? 'config.yaml',
             $options['environment'] ?? 'test',

@@ -2,6 +2,9 @@
 
 namespace Yceruto\FormFlowBundle\Tests\Integration;
 
+use Symfony\Component\Form\Extension\DataCollector\Proxy\ResolvedTypeFactoryDataCollectorProxy;
+use Yceruto\FormFlowBundle\Form\ResolvedFormTypeFactory;
+
 class FormFlowBasicTest extends AbstractWebTestCase
 {
     public function testFormFlow(): void
@@ -196,6 +199,25 @@ class FormFlowBasicTest extends AbstractWebTestCase
         self::assertSame(200, $client->getInternalResponse()->getStatusCode());
         self::assertStringContainsString('>Step2<', $crawler->html());
         self::assertSameFileContent('step2.html', $crawler->filter('body')->html());
+    }
+
+    public function testResolvedTypeFactoryDataCollectorProxyWithProfiler(): void
+    {
+        $factory = self::getContainer()->get('form.resolved_type_factory');
+
+        self::assertInstanceOf(ResolvedFormTypeFactory::class, $factory);
+    }
+
+    public function testResolvedFormTypeFactoryWithProfiler(): void
+    {
+        self::bootKernel([
+            'var_dir' => 'formflow_with_profiler',
+            'root_config' => __DIR__.'/App/config_with_profiler.yaml',
+        ]);
+
+        $factory = self::getContainer()->get('form.resolved_type_factory');
+
+        self::assertInstanceOf(ResolvedTypeFactoryDataCollectorProxy::class, $factory);
     }
 
     private static function assertSameFileContent(string $expectedFilename, string $actualContent, bool $save = false): void
