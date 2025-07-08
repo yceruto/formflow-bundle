@@ -18,6 +18,16 @@ interface ActionButtonInterface extends FormInterface, ClickableInterface
     public function getHandler(): callable;
 
     /**
+     * Checks if the callable handler was already called.
+     */
+    public function isHandled(): bool;
+
+    /**
+     * Executes the callable handler.
+     */
+    public function handle(): void;
+
+    /**
      * Checks if the button's action is 'reset'.
      */
     public function isResetAction(): bool;

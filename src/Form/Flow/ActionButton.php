@@ -2,6 +2,7 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 
 /**
@@ -10,6 +11,7 @@ use Symfony\Component\Form\SubmitButton;
 class ActionButton extends SubmitButton implements ActionButtonInterface
 {
     private mixed $data = null;
+    private bool $handled = false;
 
     public function submit(array|string|null $submittedData, bool $clearMissing = true): static
     {
@@ -39,6 +41,27 @@ class ActionButton extends SubmitButton implements ActionButtonInterface
     public function getHandler(): callable
     {
         return $this->getConfig()->getOption('handler');
+    }
+
+    public function isHandled(): bool
+    {
+        return $this->handled;
+    }
+
+    public function handle(): void
+    {
+        /** @var FormInterface $form */
+        $form = $this->getParent();
+        $data = $form->getData();
+
+        while ($form && !$form instanceof FormFlowInterface) {
+            $form = $form->getParent();
+        }
+
+        $handler = $this->getHandler();
+        $handler($data, $this, $form);
+
+        $this->handled = true;
     }
 
     public function isResetAction(): bool

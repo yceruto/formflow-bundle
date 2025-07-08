@@ -4,7 +4,6 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 
 use Symfony\Component\Form\Exception\AlreadySubmittedException;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
-use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Exception\RuntimeException;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Form;
@@ -19,7 +18,6 @@ class FormFlow extends Form implements FormFlowInterface
 {
     private ?ActionButtonInterface $clickedActionButton = null;
     private bool $finished = false;
-    private bool $handled = false;
 
     public function __construct(
         private readonly FormFlowConfigInterface $config,
@@ -61,20 +59,6 @@ class FormFlow extends Form implements FormFlowInterface
         return $this;
     }
 
-    public function handleAction(): void
-    {
-        if (!$this->clickedActionButton) {
-            throw new LogicException('No action button was clicked.');
-        }
-
-        /** @var FormInterface $form */
-        $form = $this->clickedActionButton->getParent();
-        $handler = $this->clickedActionButton->getHandler();
-        $handler($form->getData(), $this->clickedActionButton, $this);
-
-        $this->handled = true;
-    }
-
     public function reset(): void
     {
         $this->config->getDataStorage()->clear();
@@ -112,8 +96,8 @@ class FormFlow extends Form implements FormFlowInterface
             return $this;
         }
 
-        if ($this->clickedActionButton && !$this->handled) {
-            $this->handleAction();
+        if ($this->clickedActionButton && !$this->clickedActionButton->isHandled()) {
+            $this->clickedActionButton->handle();
         }
 
         if (!$this->isValid()) {
