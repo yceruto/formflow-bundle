@@ -14,13 +14,6 @@ interface FormFlowInterface extends FormInterface
     public function getClickedActionButton(): ?ActionButtonInterface;
 
     /**
-     * Executes the handler associated with the clicked action button.
-     *
-     * @throws LogicException If no action button was clicked
-     */
-    public function handleAction(): void;
-
-    /**
      * Resets the flow by clearing stored data and setting the cursor to the initial step.
      */
     public function reset(): void;

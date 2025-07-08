@@ -94,7 +94,13 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
 
     public function getInitialStep(): string
     {
-        return $this->stepAccessor->getStep($this->initialOptions['data']) ?: (string) key($this->steps);
+        $defaultStep = (string) key($this->steps);
+
+        if (!isset($this->initialOptions['data'])) {
+            return $defaultStep;
+        }
+
+        return (string) $this->stepAccessor->getStep($this->initialOptions['data'], $defaultStep);
     }
 
     public function getInitialOptions(): array
