@@ -2,9 +2,9 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
+use Symfony\Component\Form\FormConfigInterface;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\DataStorageInterface;
 use Yceruto\FormFlowBundle\Form\Flow\StepAccessor\StepAccessorInterface;
-use Symfony\Component\Form\FormConfigInterface;
 
 /**
  * The configuration of a {@link FormFlow} object.
@@ -19,12 +19,12 @@ interface FormFlowConfigInterface extends FormConfigInterface
     /**
      * Returns the step with the given name.
      */
-    public function getStep(string $name): FormFlowStepConfigInterface;
+    public function getStep(string $name): FlowStepConfigInterface;
 
     /**
      * Returns all steps.
      *
-     * @return array<string, FormFlowStepConfigInterface>
+     * @return array<string, FlowStepConfigInterface>
      */
     public function getSteps(): array;
 

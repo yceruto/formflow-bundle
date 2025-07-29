@@ -2,7 +2,7 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
-interface FormFlowStepConfigInterface
+interface FlowStepConfigInterface
 {
     /**
      * Returns the name of the step.

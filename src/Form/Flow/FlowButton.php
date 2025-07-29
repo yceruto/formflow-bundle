@@ -7,8 +7,9 @@ use Symfony\Component\Form\SubmitButton;
 
 /**
  * A button that submits the form and handles an action.
+
  */
-class ActionButton extends SubmitButton implements ActionButtonInterface
+class FlowButton extends SubmitButton implements FlowButtonInterface
 {
     private mixed $data = null;
     private bool $handled = false;
@@ -33,21 +34,6 @@ class ActionButton extends SubmitButton implements ActionButtonInterface
         return $this->data;
     }
 
-    public function getAction(): string
-    {
-        return $this->getConfig()->getOption('action');
-    }
-
-    public function getHandler(): callable
-    {
-        return $this->getConfig()->getOption('handler');
-    }
-
-    public function isHandled(): bool
-    {
-        return $this->handled;
-    }
-
     public function handle(): void
     {
         /** @var FormInterface $form */
@@ -58,30 +44,35 @@ class ActionButton extends SubmitButton implements ActionButtonInterface
             $form = $form->getParent();
         }
 
-        $handler = $this->getHandler();
+        $handler = $this->getConfig()->getOption('handler');
         $handler($data, $this, $form);
 
         $this->handled = true;
     }
 
-    public function isResetAction(): bool
+    public function isHandled(): bool
     {
-        return 'reset' === $this->getAction();
+        return $this->handled;
     }
 
-    public function isBackAction(): bool
+    public function isResetAction(): bool
     {
-        return 'back' === $this->getAction();
+        return 'reset' === $this->getConfig()->getAttribute('action');
+    }
+
+    public function isPreviousAction(): bool
+    {
+        return 'previous' === $this->getConfig()->getAttribute('action');
     }
 
     public function isNextAction(): bool
     {
-        return 'next' === $this->getAction();
+        return 'next' === $this->getConfig()->getAttribute('action');
     }
 
     public function isFinishAction(): bool
     {
-        return 'finish' === $this->getAction();
+        return 'finish' === $this->getConfig()->getAttribute('action');
     }
 
     public function isClearSubmission(): bool

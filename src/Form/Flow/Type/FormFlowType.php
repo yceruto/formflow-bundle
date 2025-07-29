@@ -1,9 +1,8 @@
 <?php
 
-namespace Yceruto\FormFlowBundle\Form\Extension\Core\Type;
+namespace Yceruto\FormFlowBundle\Form\Flow\Type;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
@@ -18,6 +17,7 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowType;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\DataStorageInterface;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\NullDataStorage;
+use Yceruto\FormFlowBundle\Form\Flow\FlowButtonInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowInterface;
 use Yceruto\FormFlowBundle\Form\Flow\StepAccessor\PropertyPathStepAccessor;
@@ -34,10 +34,8 @@ class FormFlowType extends AbstractFlowType
         $this->propertyAccessor ??= PropertyAccess::createPropertyAccessor();
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildFormFlow(FormFlowBuilderInterface $builder, array $options): void
     {
-        \assert($builder instanceof FormFlowBuilderInterface);
-
         $builder->setDataStorage($options['data_storage'] ?? new NullDataStorage());
         $builder->setStepAccessor($options['step_accessor']);
 
@@ -114,8 +112,9 @@ class FormFlowType extends AbstractFlowType
     {
         /** @var FormFlowInterface $flow */
         $flow = $event->getForm();
+        $button = $flow->getClickedButton();
 
-        if ($flow->getClickedActionButton()?->isClearSubmission()) {
+        if ($button instanceof FlowButtonInterface && $button->isClearSubmission()) {
             $event->setData([]);
         }
     }

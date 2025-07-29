@@ -2,6 +2,7 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
+use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\Exception\AlreadySubmittedException;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\Form\Exception\RuntimeException;
@@ -16,12 +17,12 @@ use Symfony\Component\Form\FormInterface;
  */
 class FormFlow extends Form implements FormFlowInterface
 {
-    private ?ActionButtonInterface $clickedActionButton = null;
+    private ?FlowButtonInterface $clickedFlowButton = null;
     private bool $finished = false;
 
     public function __construct(
         private readonly FormFlowConfigInterface $config,
-        private FormFlowCursor $cursor,
+        private FlowCursor $cursor,
     ) {
         parent::__construct($config);
     }
@@ -42,15 +43,15 @@ class FormFlow extends Form implements FormFlowInterface
             return $this;
         }
 
-        $this->setClickedActionButton($submittedData, $this);
+        $this->setClickedFlowButton($submittedData, $this);
 
         parent::submit($submittedData, $clearMissing);
 
-        if (!$this->clickedActionButton || !$this->isSubmitted() || !$this->isValid()) {
+        if (!$this->clickedFlowButton || !$this->isSubmitted() || !$this->isValid()) {
             return $this;
         }
 
-        $this->finished = $this->clickedActionButton->isFinishAction();
+        $this->finished = $this->clickedFlowButton->isFinishAction();
 
         if ($this->finished && $this->config->isAutoReset()) {
             $this->reset();
@@ -65,7 +66,7 @@ class FormFlow extends Form implements FormFlowInterface
         $this->cursor = $this->cursor->withCurrentStep($this->config->getInitialStep());
     }
 
-    public function moveBack(?string $step = null): void
+    public function movePrevious(?string $step = null): void
     {
         if ($step) {
             $this->moveBackTo($step);
@@ -73,14 +74,14 @@ class FormFlow extends Form implements FormFlowInterface
             return;
         }
 
-        if (!$this->move(fn (FormFlowCursor $cursor) => $cursor->getPrevStep())) {
+        if (!$this->move(fn (FlowCursor $cursor) => $cursor->getPreviousStep())) {
             throw new RuntimeException('Cannot determine previous step.');
         }
     }
 
     public function moveNext(): void
     {
-        if (!$this->move(fn (FormFlowCursor $cursor) => $cursor->getNextStep())) {
+        if (!$this->move(fn (FlowCursor $cursor) => $cursor->getNextStep())) {
             throw new RuntimeException('Cannot determine next step.');
         }
     }
@@ -96,8 +97,8 @@ class FormFlow extends Form implements FormFlowInterface
             return $this;
         }
 
-        if ($this->clickedActionButton && !$this->clickedActionButton->isHandled()) {
-            $this->clickedActionButton->handle();
+        if ($this->clickedFlowButton && !$this->clickedFlowButton->isHandled()) {
+            $this->clickedFlowButton->handle();
         }
 
         if (!$this->isValid()) {
@@ -107,7 +108,7 @@ class FormFlow extends Form implements FormFlowInterface
         return $this->newStepForm();
     }
 
-    public function getCursor(): FormFlowCursor
+    public function getCursor(): FlowCursor
     {
         return $this->cursor;
     }
@@ -122,12 +123,12 @@ class FormFlow extends Form implements FormFlowInterface
         return $this->finished;
     }
 
-    public function getClickedActionButton(): ?ActionButtonInterface
+    public function getClickedButton(): FlowButtonInterface|FormInterface|ClickableInterface|null
     {
-        return $this->clickedActionButton;
+        return parent::getClickedButton() ?? $this->clickedFlowButton;
     }
 
-    private function setClickedActionButton(mixed $submittedData, FormInterface $form): void
+    private function setClickedFlowButton(mixed $submittedData, FormInterface $form): void
     {
         if (!\is_array($submittedData)) {
             return;
@@ -139,23 +140,23 @@ class FormFlow extends Form implements FormFlowInterface
             }
 
             if ($child->count() > 0) {
-                $this->setClickedActionButton($submittedData[$name], $child);
+                $this->setClickedFlowButton($submittedData[$name], $child);
 
-                if ($this->clickedActionButton) {
+                if ($this->clickedFlowButton) {
                     return;
                 }
 
                 continue;
             }
 
-            if (!$child instanceof ActionButtonInterface) {
+            if (!$child instanceof FlowButtonInterface) {
                 continue;
             }
 
             $child->submit($submittedData[$name]);
 
             if ($child->isClicked()) {
-                $this->clickedActionButton = $child;
+                $this->clickedFlowButton = $child;
                 break;
             }
         }
@@ -181,7 +182,7 @@ class FormFlow extends Form implements FormFlowInterface
         }
 
         while ($targetIndex < $currentIndex) {
-            $this->moveBack();
+            $this->movePrevious();
             $currentIndex = $this->cursor->getStepIndex();
         }
 

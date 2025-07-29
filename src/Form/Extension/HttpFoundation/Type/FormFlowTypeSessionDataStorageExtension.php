@@ -5,9 +5,9 @@ namespace Yceruto\FormFlowBundle\Form\Extension\HttpFoundation\Type;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Yceruto\FormFlowBundle\Form\Extension\Core\Type\FormFlowType;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\SessionDataStorage;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
+use Yceruto\FormFlowBundle\Form\Flow\Type\FormFlowType;
 
 class FormFlowTypeSessionDataStorageExtension extends AbstractTypeExtension
 {

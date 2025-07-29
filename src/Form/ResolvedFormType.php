@@ -9,8 +9,8 @@ use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\Form\ResolvedFormType as SymfonyResolvedFormType;
 use Symfony\Component\Form\ResolvedFormTypeInterface;
 use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
-use Yceruto\FormFlowBundle\Form\Flow\ActionButtonBuilder;
-use Yceruto\FormFlowBundle\Form\Flow\ActionButtonTypeInterface;
+use Yceruto\FormFlowBundle\Form\Flow\FlowButtonBuilder;
+use Yceruto\FormFlowBundle\Form\Flow\FlowButtonTypeInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilder;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowTypeInterface;
@@ -41,8 +41,8 @@ final class ResolvedFormType extends SymfonyResolvedFormType
 
     protected function newBuilder(string $name, ?string $dataClass, FormFactoryInterface $factory, array $options): FormBuilderInterface
     {
-        if ($this->innerType instanceof ActionButtonTypeInterface) {
-            return new ActionButtonBuilder($name, $options);
+        if ($this->innerType instanceof FlowButtonTypeInterface) {
+            return new FlowButtonBuilder($name, $options);
         }
 
         if ($this->innerType instanceof FormFlowTypeInterface) {
