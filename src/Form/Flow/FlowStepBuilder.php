@@ -5,7 +5,7 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 use Symfony\Component\Form\Exception\BadMethodCallException;
 use Symfony\Component\Form\FormTypeInterface;
 
-class FormFlowStepBuilder implements FormFlowStepBuilderInterface
+class FlowStepBuilder implements FlowStepBuilderInterface
 {
     private bool $locked = false;
     private int $priority = 0;
@@ -29,7 +29,7 @@ class FormFlowStepBuilder implements FormFlowStepBuilderInterface
     public function getType(): string
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FormFlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowStepConfigInterface instance.');
+            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
         }
 
         return $this->type;
@@ -38,7 +38,7 @@ class FormFlowStepBuilder implements FormFlowStepBuilderInterface
     public function getOptions(): array
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FormFlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowStepConfigInterface instance.');
+            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
         }
 
         return $this->options;
@@ -52,7 +52,7 @@ class FormFlowStepBuilder implements FormFlowStepBuilderInterface
     public function setPriority(int $priority): static
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FormFlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowStepConfigInterface instance.');
+            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
         }
 
         $this->priority = $priority;
@@ -77,7 +77,7 @@ class FormFlowStepBuilder implements FormFlowStepBuilderInterface
     public function setSkip(?\Closure $skip): static
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FormFlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowStepConfigInterface instance.');
+            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
         }
 
         $this->skip = $skip;
@@ -85,10 +85,10 @@ class FormFlowStepBuilder implements FormFlowStepBuilderInterface
         return $this;
     }
 
-    public function getStepConfig(): FormFlowStepConfigInterface
+    public function getStepConfig(): FlowStepConfigInterface
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FormFlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowStepConfigInterface instance.');
+            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
         }
 
         // This method should be idempotent, so clone the builder

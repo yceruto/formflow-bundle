@@ -2,7 +2,7 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
-interface FormFlowStepBuilderInterface extends FormFlowStepConfigInterface
+interface FlowStepBuilderInterface extends FlowStepConfigInterface
 {
     /**
      * Returns the form type class name for the step.
@@ -30,7 +30,7 @@ interface FormFlowStepBuilderInterface extends FormFlowStepConfigInterface
     public function setSkip(?\Closure $skip): static;
 
     /**
-     * Returns a FormFlowStepConfigInterface instance for the step.
+     * Returns a FlowStepConfigInterface instance for the step.
      */
-    public function getStepConfig(): FormFlowStepConfigInterface;
+    public function getStepConfig(): FlowStepConfigInterface;
 }

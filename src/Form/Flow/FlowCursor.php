@@ -4,7 +4,7 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 
-class FormFlowCursor
+class FlowCursor
 {
     /**
      * @param array<string> $steps
@@ -38,7 +38,7 @@ class FormFlowCursor
         return $this->steps[0];
     }
 
-    public function getPrevStep(): ?string
+    public function getPreviousStep(): ?string
     {
         $currentPos = array_search($this->currentStep, $this->steps, true);
 
@@ -81,7 +81,7 @@ class FormFlowCursor
 
     public function canMoveBack(): bool
     {
-        return null !== $this->getPrevStep();
+        return null !== $this->getPreviousStep();
     }
 
     public function canMoveNext(): bool

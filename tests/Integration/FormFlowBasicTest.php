@@ -64,8 +64,8 @@ class FormFlowBasicTest extends AbstractWebTestCase
 
         self::assertStringContainsString('>Step3<', $crawler->html());
 
-        $crawler = $client->submit($crawler->selectButton('Back')->form(), [
-            'multistep[navigator][back]' => '',
+        $crawler = $client->submit($crawler->selectButton('Previous')->form(), [
+            'multistep[navigator][previous]' => '',
         ]);
 
         self::assertStringContainsString('>Step2<', $crawler->html());
@@ -107,8 +107,8 @@ class FormFlowBasicTest extends AbstractWebTestCase
 
         self::assertStringContainsString('>Step3<', $crawler->html());
 
-        $crawler = $client->submit($crawler->selectButton('Back')->form(), [
-            'multistep[navigator][back]' => 'step1',
+        $crawler = $client->submit($crawler->selectButton('Previous')->form(), [
+            'multistep[navigator][previous]' => 'step1',
         ]);
 
         self::assertStringContainsString('>Step1<', $crawler->html());
@@ -164,8 +164,8 @@ class FormFlowBasicTest extends AbstractWebTestCase
         self::assertSame(200, $client->getInternalResponse()->getStatusCode());
         self::assertStringContainsString('>Step3<', $crawler->html());
 
-        $crawler = $client->submit($crawler->selectButton('Back')->form(), [
-            'multistep[navigator][back]' => '',
+        $crawler = $client->submit($crawler->selectButton('Previous')->form(), [
+            'multistep[navigator][previous]' => '',
         ]);
 
         self::assertStringContainsString('>Step2<', $crawler->html());

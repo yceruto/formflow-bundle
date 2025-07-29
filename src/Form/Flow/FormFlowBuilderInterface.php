@@ -3,9 +3,9 @@
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\DataStorageInterface;
 use Yceruto\FormFlowBundle\Form\Flow\StepAccessor\StepAccessorInterface;
-use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * @extends \Traversable<string, FormBuilderInterface>
@@ -15,12 +15,12 @@ interface FormFlowBuilderInterface extends FormBuilderInterface, FormFlowConfigI
     /**
      * Creates a new step builder.
      */
-    public function createStep(string $name, string $type = FormType::class, array $options = []): FormFlowStepBuilderInterface;
+    public function createStep(string $name, string $type = FormType::class, array $options = []): FlowStepBuilderInterface;
 
     /**
      * Adds a step to the form flow.
      */
-    public function addStep(FormFlowStepBuilderInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static;
+    public function addStep(FlowStepBuilderInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static;
 
     /**
      * Removes a step from the form flow.
@@ -30,12 +30,12 @@ interface FormFlowBuilderInterface extends FormBuilderInterface, FormFlowConfigI
     /**
      * Returns a step builder by name.
      */
-    public function getStep(string $name): FormFlowStepBuilderInterface;
+    public function getStep(string $name): FlowStepBuilderInterface;
 
     /**
      * Returns all step builders.
      *
-     * @return array<string, FormFlowStepBuilderInterface>
+     * @return array<string, FlowStepBuilderInterface>
      */
     public function getSteps(): array;
 

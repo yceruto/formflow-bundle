@@ -2,16 +2,16 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
-use Symfony\Component\Form\Exception\LogicException;
+use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\Exception\RuntimeException;
 use Symfony\Component\Form\FormInterface;
 
 interface FormFlowInterface extends FormInterface
 {
     /**
-     * Returns the action button clicked during form submission.
+     * Returns the button used to submit the form.
      */
-    public function getClickedActionButton(): ?ActionButtonInterface;
+    public function getClickedButton(): FlowButtonInterface|FormInterface|ClickableInterface|null;
 
     /**
      * Resets the flow by clearing stored data and setting the cursor to the initial step.
@@ -25,7 +25,7 @@ interface FormFlowInterface extends FormInterface
      *
      * @throws RuntimeException If the previous step cannot be determined
      */
-    public function moveBack(?string $step = null): void;
+    public function movePrevious(?string $step = null): void;
 
     /**
      * Moves to the next step in the flow.
@@ -48,7 +48,7 @@ interface FormFlowInterface extends FormInterface
     /**
      * Returns the cursor that tracks the current position in the flow.
      */
-    public function getCursor(): FormFlowCursor;
+    public function getCursor(): FlowCursor;
 
     /**
      * Returns the configuration for this flow.

@@ -5,17 +5,12 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\FormInterface;
 
-interface ActionButtonInterface extends FormInterface, ClickableInterface
+interface FlowButtonInterface extends FormInterface, ClickableInterface
 {
     /**
-     * Returns the action name configured for the button.
+     * Executes the callable handler.
      */
-    public function getAction(): string;
-
-    /**
-     * Returns the callable handler configured for the button.
-     */
-    public function getHandler(): callable;
+    public function handle(): void;
 
     /**
      * Checks if the callable handler was already called.
@@ -23,19 +18,14 @@ interface ActionButtonInterface extends FormInterface, ClickableInterface
     public function isHandled(): bool;
 
     /**
-     * Executes the callable handler.
-     */
-    public function handle(): void;
-
-    /**
      * Checks if the button's action is 'reset'.
      */
     public function isResetAction(): bool;
 
     /**
-     * Checks if the button's action is 'back'.
+     * Checks if the button's action is 'previous'.
      */
-    public function isBackAction(): bool;
+    public function isPreviousAction(): bool;
 
     /**
      * Checks if the button's action is 'next'.
