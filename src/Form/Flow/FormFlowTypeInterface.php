@@ -9,4 +9,5 @@ use Symfony\Component\Form\FormTypeInterface;
  */
 interface FormFlowTypeInterface extends FormTypeInterface
 {
+    public function buildFormFlow(FormFlowBuilderInterface $builder, array $options): void;
 }
