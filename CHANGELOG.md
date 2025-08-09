@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+0.2.2
+-----
+ * Add `AbstractFlowButtonType` to simplify button type creation
+
+0.2.1
+-----
+ * Add `buildFormFlow(FormFlowBuilderInterface $builder, array $options)` method to `FormFlowTypeInterface`
+
+0.2.0
+-----
+ * [Breaking Changes] Renaming classes (see https://github.com/yceruto/formflow-bundle/pull/4)
+
 0.1.3
 -----
  * [Breaking Changes] Refactor action handler execution

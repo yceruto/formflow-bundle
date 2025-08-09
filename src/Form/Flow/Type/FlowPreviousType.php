@@ -2,15 +2,14 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow\Type;
 
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowButtonType;
 use Yceruto\FormFlowBundle\Form\Flow\FlowButtonInterface;
-use Yceruto\FormFlowBundle\Form\Flow\FlowButtonTypeInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FlowCursor;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowInterface;
 
-class FlowPreviousType extends AbstractType implements FlowButtonTypeInterface
+class FlowPreviousType extends AbstractFlowButtonType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -24,10 +23,5 @@ class FlowPreviousType extends AbstractType implements FlowButtonTypeInterface
             'include_if' => fn (FlowCursor $cursor): bool => $cursor->canMoveBack(),
             'clear_submission' => true,
         ]);
-    }
-
-    public function getParent(): string
-    {
-        return FlowButtonType::class;
     }
 }
