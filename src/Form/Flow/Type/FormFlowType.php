@@ -5,7 +5,6 @@ namespace Yceruto\FormFlowBundle\Form\Flow\Type;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 use Symfony\Component\OptionsResolver\Options;
@@ -42,10 +41,8 @@ class FormFlowType extends AbstractFlowType
         $builder->addEventListener(FormEvents::PRE_SUBMIT, $this->onPreSubmit(...), -100);
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options): void
+    public function buildViewFlow(FormView $view, FormFlowInterface $form, array $options): void
     {
-        \assert($form instanceof FormFlowInterface);
-
         $view->vars['cursor'] = $cursor = $form->getCursor();
 
         $index = 0;

@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.2.3
+-----
+ * Add `buildViewFlow()` and `finishViewFlow` methods to `FormFlowTypeInterface`
+
 0.2.2
 -----
  * Add `AbstractFlowButtonType` to simplify button type creation
