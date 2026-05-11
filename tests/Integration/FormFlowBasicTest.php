@@ -222,6 +222,10 @@ class FormFlowBasicTest extends AbstractWebTestCase
 
     private static function assertSameFileContent(string $expectedFilename, string $actualContent, bool $save = false): void
     {
+        // strip Symfony Form 7+ accessibility attributes so fixtures stay version-agnostic
+        $actualContent = preg_replace('/ id="[^"]*_error\d+"/', '', $actualContent);
+        $actualContent = preg_replace('/ aria-(describedby|invalid)="[^"]*"/', '', $actualContent);
+
         $expectedContent = self::getOutputFileContent($expectedFilename, $actualContent, $save);
 
         self::assertSame($expectedContent, $actualContent);
