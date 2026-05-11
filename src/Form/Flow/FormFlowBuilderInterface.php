@@ -13,6 +13,11 @@ use Yceruto\FormFlowBundle\Form\Flow\StepAccessor\StepAccessorInterface;
 interface FormFlowBuilderInterface extends FormBuilderInterface, FormFlowConfigInterface
 {
     /**
+     * Creates a new step builder marked as a group.
+     */
+    public function createStepGroup(string $name): FlowStepBuilderInterface;
+
+    /**
      * Creates a new step builder.
      */
     public function createStep(string $name, string $type = FormType::class, array $options = []): FlowStepBuilderInterface;

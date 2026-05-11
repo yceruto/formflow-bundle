@@ -74,14 +74,14 @@ class FormFlow extends Form implements FormFlowInterface
             return;
         }
 
-        if (!$this->move(fn (FlowCursor $cursor) => $cursor->getPreviousStep())) {
+        if (!$this->move(static fn (FlowCursor $cursor) => $cursor->getPreviousStep())) {
             throw new RuntimeException('Cannot determine previous step.');
         }
     }
 
     public function moveNext(): void
     {
-        if (!$this->move(fn (FlowCursor $cursor) => $cursor->getNextStep())) {
+        if (!$this->move(static fn (FlowCursor $cursor) => $cursor->getNextStep())) {
             throw new RuntimeException('Cannot determine next step.');
         }
     }
@@ -166,7 +166,7 @@ class FormFlow extends Form implements FormFlowInterface
     {
         $steps = $this->cursor->getSteps();
 
-        if (false === $targetIndex = array_search($step, $steps)) {
+        if (false === $targetIndex = array_search($step, $steps, true)) {
             throw new InvalidArgumentException(\sprintf('Step "%s" does not exist.', $step));
         }
 
@@ -191,6 +191,9 @@ class FormFlow extends Form implements FormFlowInterface
         }
     }
 
+    /**
+     * @param-immediately-invoked-callable $direction
+     */
     private function move(\Closure $direction): bool
     {
         $data = $this->getData();
@@ -207,8 +210,18 @@ class FormFlow extends Form implements FormFlowInterface
 
             $cursor = $cursor->withCurrentStep($newStep);
 
-            if (!$this->config->getStep($newStep)->isSkipped($data)) {
+            if (!$cursor->getCurrentStepNode()->isGroupOrSkipped($data)) {
                 break;
+            }
+
+            if ($cursor->isLastStep()) {
+                $this->finished = true;
+
+                if ($this->config->isAutoReset()) {
+                    $this->reset();
+                }
+
+                return true;
             }
         }
 
