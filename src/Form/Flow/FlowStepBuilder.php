@@ -118,7 +118,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
             return $this;
         }
 
-        $this->children[$name] = new FlowStepBuilder($name, $type, $options)
+        $this->children[$name] = (new FlowStepBuilder($name, $type, $options))
             ->setSkip($skip ? $skip(...) : null)
             ->setPriority($priority);
 
@@ -139,7 +139,17 @@ class FlowStepBuilder implements FlowStepBuilderInterface
 
     public function hasStep(string $name): bool
     {
-        return isset($this->children[$name]) || array_any($this->children, fn (FlowStepBuilderInterface $step) => $step->hasStep($name));
+        if (isset($this->children[$name])) {
+            return true;
+        }
+
+        foreach ($this->children as $step) {
+            if ($step->hasStep($name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getStep(string $name): FlowStepConfigInterface

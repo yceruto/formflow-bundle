@@ -3,7 +3,6 @@ CHANGELOG
 
 0.3.0
 -----
- * Bump minimum PHP version to 8.4
  * Add support for grouping and nested steps in `FormFlowType`
  * Add `FlowStepNode` for representing the step flow tree (forest graph)
  * Add `createStepGroup()` method to `FormFlowBuilderInterface`

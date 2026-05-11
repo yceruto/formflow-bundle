@@ -137,6 +137,12 @@ class FormFlowType extends AbstractFlowType
 
     private function hasCurrentStepDescendant(array $children): bool
     {
-        return array_any($children, static fn (array $child): bool => $child['is_current_step'] || $child['has_current_step_descendant']);
+        foreach ($children as $child) {
+            if ($child['is_current_step'] || $child['has_current_step_descendant']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

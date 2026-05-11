@@ -21,7 +21,7 @@ class FlowCursorTest extends TestCase
     {
         $configs = [];
         foreach ($names as $name) {
-            $configs[$name] = new FlowStepBuilder($name)->getStepConfig();
+            $configs[$name] = (new FlowStepBuilder($name))->getStepConfig();
         }
 
         return $configs;
@@ -29,14 +29,14 @@ class FlowCursorTest extends TestCase
 
     private static function createNestedSteps(): array
     {
-        $personal = new FlowStepBuilder('personal')
+        $personal = (new FlowStepBuilder('personal'))
             ->addStep('name')
             ->addStep('contact');
 
         return [
-            'intro' => new FlowStepBuilder('intro')->getStepConfig(),
+            'intro' => (new FlowStepBuilder('intro'))->getStepConfig(),
             'personal' => $personal->getStepConfig(),
-            'summary' => new FlowStepBuilder('summary')->getStepConfig(),
+            'summary' => (new FlowStepBuilder('summary'))->getStepConfig(),
         ];
     }
 
@@ -286,19 +286,19 @@ class FlowCursorTest extends TestCase
 
     public function testNestedStepsWithMultipleForests()
     {
-        $personal = new FlowStepBuilder('personal')
+        $personal = (new FlowStepBuilder('personal'))
             ->addStep('name')
             ->addStep('email');
-        $work = new FlowStepBuilder('work')
+        $work = (new FlowStepBuilder('work'))
             ->addStep('company')
             ->addStep('role');
 
         $cursor = new FlowCursor([
-            'intro' => new FlowStepBuilder('intro')->getStepConfig(),
+            'intro' => (new FlowStepBuilder('intro'))->getStepConfig(),
             'personal' => $personal->getStepConfig(),
-            'middle' => new FlowStepBuilder('middle')->getStepConfig(),
+            'middle' => (new FlowStepBuilder('middle'))->getStepConfig(),
             'work' => $work->getStepConfig(),
-            'summary' => new FlowStepBuilder('summary')->getStepConfig(),
+            'summary' => (new FlowStepBuilder('summary'))->getStepConfig(),
         ], 'intro');
 
         $this->assertSame(['intro', 'personal', 'name', 'email', 'middle', 'work', 'company', 'role', 'summary'], $cursor->getSteps());
@@ -317,21 +317,21 @@ class FlowCursorTest extends TestCase
 
     public function testStringKeyNestedStepsWithDepth()
     {
-        $position = new FlowStepBuilder('position')
+        $position = (new FlowStepBuilder('position'))
             ->addStep('title')
             ->addStep('department');
-        $work = new FlowStepBuilder('work')
+        $work = (new FlowStepBuilder('work'))
             ->addStep('company')
             ->addStep($position);
-        $personal = new FlowStepBuilder('personal')
+        $personal = (new FlowStepBuilder('personal'))
             ->addStep('name')
             ->addStep('contact');
 
         $cursor = new FlowCursor([
-            'intro' => new FlowStepBuilder('intro')->getStepConfig(),
+            'intro' => (new FlowStepBuilder('intro'))->getStepConfig(),
             'personal' => $personal->getStepConfig(),
             'work' => $work->getStepConfig(),
-            'summary' => new FlowStepBuilder('summary')->getStepConfig(),
+            'summary' => (new FlowStepBuilder('summary'))->getStepConfig(),
         ], 'intro');
 
         $this->assertSame([
@@ -376,19 +376,19 @@ class FlowCursorTest extends TestCase
     {
         $steps = self::createNestedSteps();
 
-        $this->assertNull(new FlowCursor($steps, 'intro')->getParentStep());
-        $this->assertNull(new FlowCursor($steps, 'personal')->getParentStep());
-        $this->assertSame('personal', new FlowCursor($steps, 'name')->getParentStep());
-        $this->assertSame('personal', new FlowCursor($steps, 'contact')->getParentStep());
+        $this->assertNull((new FlowCursor($steps, 'intro'))->getParentStep());
+        $this->assertNull((new FlowCursor($steps, 'personal'))->getParentStep());
+        $this->assertSame('personal', (new FlowCursor($steps, 'name'))->getParentStep());
+        $this->assertSame('personal', (new FlowCursor($steps, 'contact'))->getParentStep());
     }
 
     public function testGetChildSteps()
     {
         $steps = self::createNestedSteps();
 
-        $this->assertSame([], new FlowCursor($steps, 'intro')->getChildSteps());
-        $this->assertSame(['name', 'contact'], new FlowCursor($steps, 'personal')->getChildSteps());
-        $this->assertSame([], new FlowCursor($steps, 'name')->getChildSteps());
+        $this->assertSame([], (new FlowCursor($steps, 'intro'))->getChildSteps());
+        $this->assertSame(['name', 'contact'], (new FlowCursor($steps, 'personal'))->getChildSteps());
+        $this->assertSame([], (new FlowCursor($steps, 'name'))->getChildSteps());
     }
 
     public function testWithCurrentStepSharesForest()

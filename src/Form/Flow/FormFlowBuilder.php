@@ -32,7 +32,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
             throw new BadMethodCallException('FormFlowBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowConfigInterface instance.');
         }
 
-        return new FlowStepBuilder($name)->setGroup(true);
+        return (new FlowStepBuilder($name))->setGroup(true);
     }
 
     public function createStep(string $name, string $type = FormType::class, array $options = []): FlowStepBuilderInterface

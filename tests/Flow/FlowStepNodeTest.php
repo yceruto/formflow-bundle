@@ -256,7 +256,7 @@ class FlowStepNodeTest extends TestCase
 
     public function testGroupNodeIsSkipped()
     {
-        $stepA = new FlowStepBuilder('stepA')
+        $stepA = (new FlowStepBuilder('stepA'))
             ->setGroup(true)
             ->addStep('stepA1')
             ->addStep('stepA2');
@@ -271,7 +271,7 @@ class FlowStepNodeTest extends TestCase
 
     public function testSkipPropagatesToChildren()
     {
-        $stepB = new FlowStepBuilder('stepB')
+        $stepB = (new FlowStepBuilder('stepB'))
             ->setSkip(fn () => true)
             ->addStep('stepB1')
             ->addStep('stepB2');
@@ -284,10 +284,10 @@ class FlowStepNodeTest extends TestCase
 
     public function testSkipPropagatesAcrossMultipleLevels()
     {
-        $stepA = new FlowStepBuilder('stepA')
+        $stepA = (new FlowStepBuilder('stepA'))
             ->setSkip(fn () => true)
             ->addStep(
-                new FlowStepBuilder('stepA1')
+                (new FlowStepBuilder('stepA1'))
                     ->addStep('stepA11')
             );
         $roots = FlowStepNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
@@ -300,9 +300,9 @@ class FlowStepNodeTest extends TestCase
 
     public function testSkipDoesNotPropagateWhenParentNotSkipped()
     {
-        $stepA = new FlowStepBuilder('stepA')
+        $stepA = (new FlowStepBuilder('stepA'))
             ->addStep(
-                new FlowStepBuilder('stepA1')
+                (new FlowStepBuilder('stepA1'))
                     ->setSkip(fn () => true)
                     ->addStep('stepA11')
             )
@@ -320,7 +320,7 @@ class FlowStepNodeTest extends TestCase
 
     public function testGroupWithSkipOnChildrenAreSkipped()
     {
-        $stepA = new FlowStepBuilder('stepA')
+        $stepA = (new FlowStepBuilder('stepA'))
             ->setGroup(true)
             ->setSkip(fn () => true)
             ->addStep('stepA1')
@@ -335,7 +335,7 @@ class FlowStepNodeTest extends TestCase
 
     public function testGroupWithNoChildrenThrows()
     {
-        $stepA = new FlowStepBuilder('stepA')
+        $stepA = (new FlowStepBuilder('stepA'))
             ->setGroup(true);
 
         $this->expectException(LogicException::class);
