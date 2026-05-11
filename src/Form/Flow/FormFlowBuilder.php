@@ -26,6 +26,15 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
     private DataStorageInterface $dataStorage;
     private StepAccessorInterface $stepAccessor;
 
+    public function createStepGroup(string $name): FlowStepBuilderInterface
+    {
+        if ($this->locked) {
+            throw new BadMethodCallException('FormFlowBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowConfigInterface instance.');
+        }
+
+        return new FlowStepBuilder($name)->setGroup(true);
+    }
+
     public function createStep(string $name, string $type = FormType::class, array $options = []): FlowStepBuilderInterface
     {
         if ($this->locked) {
@@ -68,12 +77,34 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
 
     public function hasStep(string $name): bool
     {
-        return isset($this->steps[$name]);
+        if (isset($this->steps[$name])) {
+            return true;
+        }
+
+        foreach ($this->steps as $step) {
+            if ($step->hasStep($name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getStep(string $name): FlowStepBuilderInterface
     {
-        return $this->steps[$name] ?? throw new InvalidArgumentException(\sprintf('Step "%s" does not exist.', $name));
+        if (isset($this->steps[$name])) {
+            return $this->steps[$name];
+        }
+
+        foreach ($this->steps as $step) {
+            try {
+                return $step->getStep($name);
+            } catch (InvalidArgumentException) {
+                // Continue searching
+            }
+        }
+
+        throw new InvalidArgumentException(\sprintf('Step "%s" does not exist.', $name));
     }
 
     public function getSteps(): array
@@ -94,7 +125,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
 
     public function getInitialStep(): string
     {
-        $defaultStep = (string) key($this->steps);
+        $defaultStep = $this->resolveFirstStep();
 
         if (!isset($this->initialOptions['data'])) {
             return $defaultStep;
@@ -191,23 +222,18 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
             throw new InvalidArgumentException('Steps not configured.');
         }
 
-        uasort($this->steps, static function (FlowStepBuilderInterface $a, FlowStepBuilderInterface $b) {
-            return $b->getPriority() <=> $a->getPriority();
-        });
+        uasort($this->steps, static fn (FlowStepBuilderInterface $a, FlowStepBuilderInterface $b) => $b->getPriority() <=> $a->getPriority());
 
+        $config = $this->getFormConfig();
         $currentStep = $this->resolveCurrentStep();
 
-        if (!isset($this->steps[$currentStep])) {
-            throw new InvalidArgumentException(\sprintf('Step form "%s" is not defined.', $currentStep));
-        }
-
-        $step = $this->steps[$currentStep];
+        $step = $this->getStep($currentStep);
         $this->add($step->getName(), $step->getType(), $step->getOptions());
 
-        $cursor = new FlowCursor(array_keys($this->steps), $currentStep);
+        $cursor = new FlowCursor($config->getSteps(), $currentStep);
         $this->pruneActionButtons($this, $cursor);
 
-        return new FormFlow($this->getFormConfig(), $cursor);
+        return new FormFlow($config, $cursor);
     }
 
     private function resolveCurrentStep(): string
@@ -215,12 +241,36 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
         $data = $this->getData();
 
         if (!$currentStep = $this->getStepAccessor()->getStep($data)) {
-            $currentStep = key($this->steps);
+            $currentStep = $this->resolveFirstStep();
             $this->getStepAccessor()->setStep($data, $currentStep);
             $this->setData($data);
         }
 
         return $currentStep;
+    }
+
+    /**
+     * Finds the first navigable step in DFS pre-order.
+     *
+     * A step is navigable if it is neither a group nor skipped.
+     */
+    private function resolveFirstStep(?array $steps = null): string
+    {
+        foreach ($steps ?? $this->steps as $step) {
+            if (!$step->isGroup() && !$step->isSkipped($this->getData())) {
+                return $step->getName();
+            }
+
+            if ($children = $step->getSteps()) {
+                try {
+                    return $this->resolveFirstStep($children);
+                } catch (LogicException) {
+                    continue;
+                }
+            }
+        }
+
+        throw new LogicException('No navigable step found. All steps are groups or skipped.');
     }
 
     private function pruneActionButtons(FormBuilderInterface $builder, FlowCursor $cursor): void

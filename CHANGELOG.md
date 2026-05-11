@@ -1,6 +1,21 @@
 CHANGELOG
 =========
 
+0.3.0
+-----
+ * Bump minimum PHP version to 8.4
+ * Add support for grouping and nested steps in `FormFlowType`
+ * Add `FlowStepNode` for representing the step flow tree (forest graph)
+ * Add `createStepGroup()` method to `FormFlowBuilderInterface`
+ * Add `setGroup()`, `addStep()`, `removeStep()` methods to `FlowStepBuilderInterface`
+ * Add `isGroup()`, `getSteps()`, `hasStep()`, `getStep()` methods to `FlowStepConfigInterface`
+ * Add `with_reset` option to `FlowNavigatorType` to conditionally include the reset button (defaults to `false`)
+ * Add `getStepIndexOf()`, `getParentStep()`, `getChildSteps()`, `getCurrentStepNode()`, `getStepNode()` and `getRootStepNodes()` methods to `FlowCursor`
+ * `FlowCursor` now accepts either a flat list of step names or a list of `FlowStepConfigInterface` instances, and flattens nested trees via DFS pre-order traversal
+ * Add new view variables to `FormFlowType`: `level`, `is_before_current_step`, `has_current_step_descendant`, `is_after_current_step`, `is_group`, `children`, `visible_children`
+ * [Breaking Changes] `FlowNavigatorType` no longer adds a `reset` button by default; pass `'with_reset' => true` to opt in
+ * [Breaking Changes] `FlowStepBuilder::setGroup()`, `addStep()`, `removeStep()` return type changed from `FlowStepBuilderInterface` to `static`
+
 0.2.3
 -----
  * Add `buildViewFlow()` and `finishViewFlow` methods to `FormFlowTypeInterface`

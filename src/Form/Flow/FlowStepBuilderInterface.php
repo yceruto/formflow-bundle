@@ -2,6 +2,8 @@
 
 namespace Yceruto\FormFlowBundle\Form\Flow;
 
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+
 interface FlowStepBuilderInterface extends FlowStepConfigInterface
 {
     /**
@@ -28,6 +30,21 @@ interface FlowStepBuilderInterface extends FlowStepConfigInterface
      * Sets the closure that determines if the step should be skipped.
      */
     public function setSkip(?\Closure $skip): static;
+
+    /**
+     * Marks (or unmarks) this step as a group (a non-navigable container with child steps).
+     */
+    public function setGroup(bool $group): static;
+
+    /**
+     * Adds a child step.
+     */
+    public function addStep(self|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static;
+
+    /**
+     * Removes a child step by name.
+     */
+    public function removeStep(string $name): static;
 
     /**
      * Returns a FlowStepConfigInterface instance for the step.
