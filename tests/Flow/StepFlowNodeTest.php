@@ -4,13 +4,13 @@ namespace Yceruto\FormFlowBundle\Tests\Flow;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\LogicException;
-use Yceruto\FormFlowBundle\Form\Flow\FlowStepBuilder;
-use Yceruto\FormFlowBundle\Form\Flow\FlowStepNode;
+use Yceruto\FormFlowBundle\Form\Flow\StepFlowBuilder;
+use Yceruto\FormFlowBundle\Form\Flow\StepFlowNode;
 
-class FlowStepNodeTest extends TestCase
+class StepFlowNodeTest extends TestCase
 {
     /**
-     * @return list<FlowStepNode>
+     * @return list<StepFlowNode>
      */
     private static function createNodes(array $steps): array
     {
@@ -19,20 +19,20 @@ class FlowStepNodeTest extends TestCase
             $configs[$name] = $builder->getStepConfig();
         }
 
-        return FlowStepNode::fromConfig($configs);
+        return StepFlowNode::fromConfig($configs);
     }
 
     /**
-     * @return array<string, FlowStepBuilder>
+     * @return array<string, StepFlowBuilder>
      */
     private static function buildBuilders(array $steps): array
     {
         $builders = [];
         foreach ($steps as $key => $value) {
             if (\is_int($key)) {
-                $builders[$value] = new FlowStepBuilder($value);
+                $builders[$value] = new StepFlowBuilder($value);
             } else {
-                $builder = new FlowStepBuilder($key);
+                $builder = new StepFlowBuilder($key);
                 foreach (self::buildBuilders($value) as $child) {
                     $builder->addStep($child);
                 }
@@ -256,11 +256,11 @@ class FlowStepNodeTest extends TestCase
 
     public function testGroupNodeIsSkipped()
     {
-        $stepA = (new FlowStepBuilder('stepA'))
+        $stepA = (new StepFlowBuilder('stepA'))
             ->setGroup(true)
             ->addStep('stepA1')
             ->addStep('stepA2');
-        $roots = FlowStepNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
+        $roots = StepFlowNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
 
         $this->assertTrue($roots[0]->isGroup());
         $this->assertTrue($roots[0]->isGroupOrSkipped(null));
@@ -271,11 +271,11 @@ class FlowStepNodeTest extends TestCase
 
     public function testSkipPropagatesToChildren()
     {
-        $stepB = (new FlowStepBuilder('stepB'))
+        $stepB = (new StepFlowBuilder('stepB'))
             ->setSkip(fn () => true)
             ->addStep('stepB1')
             ->addStep('stepB2');
-        $roots = FlowStepNode::fromConfig(['stepB' => $stepB->getStepConfig()]);
+        $roots = StepFlowNode::fromConfig(['stepB' => $stepB->getStepConfig()]);
 
         $this->assertTrue($roots[0]->isGroupOrSkipped(null));
         $this->assertTrue($roots[0]->getChildren()[0]->isGroupOrSkipped(null));
@@ -284,13 +284,13 @@ class FlowStepNodeTest extends TestCase
 
     public function testSkipPropagatesAcrossMultipleLevels()
     {
-        $stepA = (new FlowStepBuilder('stepA'))
+        $stepA = (new StepFlowBuilder('stepA'))
             ->setSkip(fn () => true)
             ->addStep(
-                (new FlowStepBuilder('stepA1'))
+                (new StepFlowBuilder('stepA1'))
                     ->addStep('stepA11')
             );
-        $roots = FlowStepNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
+        $roots = StepFlowNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
 
         $this->assertTrue($roots[0]->isGroupOrSkipped(null));
         $stepA1 = $roots[0]->getChildren()[0];
@@ -300,14 +300,14 @@ class FlowStepNodeTest extends TestCase
 
     public function testSkipDoesNotPropagateWhenParentNotSkipped()
     {
-        $stepA = (new FlowStepBuilder('stepA'))
+        $stepA = (new StepFlowBuilder('stepA'))
             ->addStep(
-                (new FlowStepBuilder('stepA1'))
+                (new StepFlowBuilder('stepA1'))
                     ->setSkip(fn () => true)
                     ->addStep('stepA11')
             )
             ->addStep('stepA2');
-        $roots = FlowStepNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
+        $roots = StepFlowNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
 
         $this->assertFalse($roots[0]->isGroupOrSkipped(null));
 
@@ -320,13 +320,13 @@ class FlowStepNodeTest extends TestCase
 
     public function testGroupWithSkipOnChildrenAreSkipped()
     {
-        $stepA = (new FlowStepBuilder('stepA'))
+        $stepA = (new StepFlowBuilder('stepA'))
             ->setGroup(true)
             ->setSkip(fn () => true)
             ->addStep('stepA1')
             ->addStep('stepA2');
 
-        $roots = FlowStepNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
+        $roots = StepFlowNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
 
         $this->assertTrue($roots[0]->isGroupOrSkipped(null));
         $this->assertTrue($roots[0]->getChildren()[0]->isGroupOrSkipped(null));
@@ -335,13 +335,13 @@ class FlowStepNodeTest extends TestCase
 
     public function testGroupWithNoChildrenThrows()
     {
-        $stepA = (new FlowStepBuilder('stepA'))
+        $stepA = (new StepFlowBuilder('stepA'))
             ->setGroup(true);
 
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Step "stepA" is marked as group but has no child steps.');
 
-        FlowStepNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
+        StepFlowNode::fromConfig(['stepA' => $stepA->getStepConfig()]);
     }
 
     public function testMultipleForests()

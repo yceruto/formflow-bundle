@@ -6,7 +6,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowType;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
-use Yceruto\FormFlowBundle\Form\Flow\Type\FlowNavigatorType;
+use Yceruto\FormFlowBundle\Form\Flow\Type\NavigatorFlowType;
 
 class FirstStepSkippedType extends AbstractFlowType
 {
@@ -16,7 +16,7 @@ class FirstStepSkippedType extends AbstractFlowType
         $builder->addStep('step2', TextType::class);
         $builder->addStep('step3', TextType::class);
 
-        $builder->add('navigator', FlowNavigatorType::class);
+        $builder->add('navigator', NavigatorFlowType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

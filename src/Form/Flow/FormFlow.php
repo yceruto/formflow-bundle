@@ -17,12 +17,12 @@ use Symfony\Component\Form\FormInterface;
  */
 class FormFlow extends Form implements FormFlowInterface
 {
-    private ?FlowButtonInterface $clickedFlowButton = null;
+    private ?ButtonFlowInterface $clickedFlowButton = null;
     private bool $finished = false;
 
     public function __construct(
         private readonly FormFlowConfigInterface $config,
-        private FlowCursor $cursor,
+        private FormFlowCursor $cursor,
     ) {
         parent::__construct($config);
     }
@@ -74,14 +74,14 @@ class FormFlow extends Form implements FormFlowInterface
             return;
         }
 
-        if (!$this->move(static fn (FlowCursor $cursor) => $cursor->getPreviousStep())) {
+        if (!$this->move(static fn (FormFlowCursor $cursor) => $cursor->getPreviousStep())) {
             throw new RuntimeException('Cannot determine previous step.');
         }
     }
 
     public function moveNext(): void
     {
-        if (!$this->move(static fn (FlowCursor $cursor) => $cursor->getNextStep())) {
+        if (!$this->move(static fn (FormFlowCursor $cursor) => $cursor->getNextStep())) {
             throw new RuntimeException('Cannot determine next step.');
         }
     }
@@ -108,7 +108,7 @@ class FormFlow extends Form implements FormFlowInterface
         return $this->newStepForm();
     }
 
-    public function getCursor(): FlowCursor
+    public function getCursor(): FormFlowCursor
     {
         return $this->cursor;
     }
@@ -123,7 +123,7 @@ class FormFlow extends Form implements FormFlowInterface
         return $this->finished;
     }
 
-    public function getClickedButton(): FlowButtonInterface|FormInterface|ClickableInterface|null
+    public function getClickedButton(): ButtonFlowInterface|FormInterface|ClickableInterface|null
     {
         return parent::getClickedButton() ?? $this->clickedFlowButton;
     }
@@ -149,7 +149,7 @@ class FormFlow extends Form implements FormFlowInterface
                 continue;
             }
 
-            if (!$child instanceof FlowButtonInterface) {
+            if (!$child instanceof ButtonFlowInterface) {
                 continue;
             }
 

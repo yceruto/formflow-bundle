@@ -9,7 +9,7 @@ use Symfony\Component\Form\SubmitButton;
  * A button that submits the form and handles an action.
 
  */
-class FlowButton extends SubmitButton implements FlowButtonInterface
+class ButtonFlow extends SubmitButton implements ButtonFlowInterface
 {
     private mixed $data = null;
     private bool $handled = false;

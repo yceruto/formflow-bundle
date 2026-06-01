@@ -1,6 +1,35 @@
 CHANGELOG
 =========
 
+0.4.0
+-----
+ * [Breaking Changes] Renamed the Form Flow classes to follow Symfony's native naming convention (`<Thing>Flow` instead of `Flow<Thing>`). The `Yceruto\FormFlowBundle\Form\Flow` namespace is unchanged; only class names changed:
+
+   | Before                     | After                            |
+   |----------------------------|----------------------------------|
+   | `AbstractFlowButtonType`   | `AbstractButtonFlowType`         |
+   | `FlowButton`               | `ButtonFlow`                     |
+   | `FlowButtonBuilder`        | `ButtonFlowBuilder`              |
+   | `FlowButtonInterface`      | `ButtonFlowInterface`            |
+   | `FlowButtonTypeInterface`  | `ButtonFlowTypeInterface`        |
+   | `FlowCursor`               | `FormFlowCursor`                 |
+   | `FlowStepNode`             | `StepFlowNode`                   |
+   | `FlowStepBuilder`          | `StepFlowBuilder`                |
+   | `FlowStepBuilderInterface` | `StepFlowBuilderConfigInterface` |
+   | `FlowStepConfigInterface`  | `StepFlowConfigInterface`        |
+   | `Type\FlowButtonType`      | `Type\ButtonFlowType`            |
+   | `Type\FlowFinishType`      | `Type\FinishFlowType`            |
+   | `Type\FlowNavigatorType`   | `Type\NavigatorFlowType`         |
+   | `Type\FlowNextType`        | `Type\NextFlowType`              |
+   | `Type\FlowPreviousType`    | `Type\PreviousFlowType`          |
+   | `Type\FlowResetType`       | `Type\ResetFlowType`             |
+
+ * [Breaking Changes] As a consequence of the type renames, the form type block prefixes changed: `flow_button` → `button_flow`, `flow_finish` → `finish_flow`, `flow_navigator` → `navigator_flow`, `flow_next` → `next_flow`, `flow_previous` → `previous_flow`, `flow_reset` → `reset_flow`. Update any custom form themes that reference the old block names.
+
+0.3.1
+-----
+ * Add support for Symfony 8.0
+
 0.3.0
 -----
  * Add support for grouping and nested steps in `FormFlowType`

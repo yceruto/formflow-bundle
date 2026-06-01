@@ -19,12 +19,12 @@ interface FormFlowConfigInterface extends FormConfigInterface
     /**
      * Returns the step with the given name.
      */
-    public function getStep(string $name): FlowStepConfigInterface;
+    public function getStep(string $name): StepFlowConfigInterface;
 
     /**
      * Returns all steps.
      *
-     * @return array<string, FlowStepConfigInterface>
+     * @return array<string, StepFlowConfigInterface>
      */
     public function getSteps(): array;
 

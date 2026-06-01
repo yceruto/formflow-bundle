@@ -5,18 +5,18 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\Form\Exception\LogicException;
 
-class FlowCursor
+class FormFlowCursor
 {
-    /** @var list<FlowStepNode> */
+    /** @var list<StepFlowNode> */
     private array $roots;
-    /** @var array<string, FlowStepNode> */
+    /** @var array<string, StepFlowNode> */
     private array $stepMap;
     /** @var list<string> */
     private array $steps;
-    private FlowStepNode $currentStep;
+    private StepFlowNode $currentStep;
 
     /**
-     * @param array<string, FlowStepConfigInterface>|list<string> $steps       Step configs or a flat list of step names
+     * @param array<string, StepFlowConfigInterface>|list<string> $steps       Step configs or a flat list of step names
      * @param string                                              $currentStep The name of the current step
      */
     public function __construct(
@@ -26,9 +26,9 @@ class FlowCursor
         $first = reset($steps);
 
         if (\is_string($first)) {
-            $this->roots = FlowStepNode::fromArray($steps);
-        } elseif ($first instanceof FlowStepConfigInterface) {
-            $this->roots = FlowStepNode::fromConfig($steps);
+            $this->roots = StepFlowNode::fromArray($steps);
+        } elseif ($first instanceof StepFlowConfigInterface) {
+            $this->roots = StepFlowNode::fromConfig($steps);
         } else {
             throw new InvalidArgumentException('The $steps argument must be a list of step names or a list of step configs.');
         }
@@ -91,7 +91,7 @@ class FlowCursor
      */
     public function getChildSteps(): array
     {
-        return array_map(static fn (FlowStepNode $node) => $node->getName(), $this->currentStep->getChildren());
+        return array_map(static fn (StepFlowNode $node) => $node->getName(), $this->currentStep->getChildren());
     }
 
     public function getFirstStep(): string
@@ -195,12 +195,12 @@ class FlowCursor
         return false;
     }
 
-    public function getCurrentStepNode(): FlowStepNode
+    public function getCurrentStepNode(): StepFlowNode
     {
         return $this->currentStep;
     }
 
-    public function getStepNode(string $name): FlowStepNode
+    public function getStepNode(string $name): StepFlowNode
     {
         if (!isset($this->stepMap[$name])) {
             throw new InvalidArgumentException(\sprintf('Step "%s" does not exist. Available steps are: "%s".', $name, implode('", "', $this->steps)));
@@ -210,7 +210,7 @@ class FlowCursor
     }
 
     /**
-     * @return list<FlowStepNode>
+     * @return list<StepFlowNode>
      */
     public function getRootStepNodes(): array
     {

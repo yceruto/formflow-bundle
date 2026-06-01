@@ -6,13 +6,13 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Yceruto\FormFlowBundle\Form\Flow\FlowButtonTypeInterface;
-use Yceruto\FormFlowBundle\Form\Flow\FlowCursor;
+use Yceruto\FormFlowBundle\Form\Flow\ButtonFlowTypeInterface;
+use Yceruto\FormFlowBundle\Form\Flow\FormFlowCursor;
 
 /**
  * A submit button with a callable handler for a form flow.
  */
-class FlowButtonType extends AbstractType implements FlowButtonTypeInterface
+class ButtonFlowType extends AbstractType implements ButtonFlowTypeInterface
 {
     public function configureOptions(OptionsResolver $resolver): void
     {
@@ -27,7 +27,7 @@ class FlowButtonType extends AbstractType implements FlowButtonTypeInterface
             ->allowedTypes('null', 'array', 'callable')
             ->normalize(function (Options $options, mixed $value) {
                 if (\is_array($value)) {
-                    return fn (FlowCursor $cursor): bool => \in_array($cursor->getCurrentStep(), $value, true);
+                    return fn (FormFlowCursor $cursor): bool => \in_array($cursor->getCurrentStep(), $value, true);
                 }
 
                 return $value;

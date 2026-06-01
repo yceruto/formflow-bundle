@@ -13,11 +13,11 @@ use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
 use Symfony\Component\Validator\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Validator\Validation;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\InMemoryDataStorage;
-use Yceruto\FormFlowBundle\Form\Flow\FlowButtonInterface;
-use Yceruto\FormFlowBundle\Form\Flow\FlowCursor;
+use Yceruto\FormFlowBundle\Form\Flow\ButtonFlowInterface;
+use Yceruto\FormFlowBundle\Form\Flow\FormFlowCursor;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowInterface;
-use Yceruto\FormFlowBundle\Form\Flow\Type\FlowNextType;
-use Yceruto\FormFlowBundle\Form\Flow\Type\FlowPreviousType;
+use Yceruto\FormFlowBundle\Form\Flow\Type\NextFlowType;
+use Yceruto\FormFlowBundle\Form\Flow\Type\PreviousFlowType;
 use Yceruto\FormFlowBundle\Form\ResolvedFormTypeFactory;
 use Yceruto\FormFlowBundle\Tests\Fixtures\Flow\Data\UserSignUp;
 use Yceruto\FormFlowBundle\Tests\Fixtures\Flow\Extension\UserSignUpTypeExtension;
@@ -349,11 +349,11 @@ class FormFlowTest extends TestCase
 
         $flow = $this->factory->create(UserSignUpType::class, $data);
         // previous action without purge submission
-        $flow->get('navigator')->add('previous', FlowPreviousType::class, [
+        $flow->get('navigator')->add('previous', PreviousFlowType::class, [
             'validate' => false,
             'validation_groups' => false,
             'clear_submission' => false,
-            'include_if' => static fn (FlowCursor $cursor) => $cursor->canMoveBack(),
+            'include_if' => static fn (FormFlowCursor $cursor) => $cursor->canMoveBack(),
         ]);
 
         self::assertSame('professional', $flow->getCursor()->getCurrentStep());
@@ -555,7 +555,7 @@ class FormFlowTest extends TestCase
         $data->currentStep = 'account';
 
         $flow = $this->factory->create(UserSignUpType::class, $data);
-        $flow->get('navigator')->add('back_to_step', FlowPreviousType::class, [
+        $flow->get('navigator')->add('back_to_step', PreviousFlowType::class, [
             'validate' => false,
             'validation_groups' => false,
             'clear_submission' => false,
@@ -675,7 +675,7 @@ class FormFlowTest extends TestCase
         $flow = $this->factory->create(UserSignUpType::class, new UserSignUp());
 
         $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+        $this->expectExceptionMessage('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
 
         $flow->getConfig()->getStep('personal')->setPriority(0);
     }
@@ -705,7 +705,7 @@ class FormFlowTest extends TestCase
         $flow = $this->factory->create(UserSignUpType::class, new UserSignUp());
         $view = $flow->createView();
 
-        self::assertInstanceOf(FlowCursor::class, $view->vars['cursor']);
+        self::assertInstanceOf(FormFlowCursor::class, $view->vars['cursor']);
         self::assertCount(3, $view->vars['steps']);
         self::assertSame(['personal', 'professional', 'account'], array_keys($view->vars['steps']));
         self::assertSame('personal', $view->vars['steps']['personal']['name']);
@@ -902,8 +902,8 @@ class FormFlowTest extends TestCase
     public function testAddFormErrorOnActionHandling()
     {
         $flow = $this->factory->create(UserSignUpType::class, new UserSignUp());
-        $flow->get('navigator')->add('next', FlowNextType::class, [
-            'handler' => static function (mixed $data, FlowButtonInterface $button, FormFlowInterface $flow) {
+        $flow->get('navigator')->add('next', NextFlowType::class, [
+            'handler' => static function (mixed $data, ButtonFlowInterface $button, FormFlowInterface $flow) {
                 $flow->addError(new FormError('Action error'));
             },
         ]);

@@ -9,16 +9,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * A navigator type that defines default buttons to interact with a form flow.
  */
-class FlowNavigatorType extends AbstractType
+class NavigatorFlowType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('previous', FlowPreviousType::class);
-        $builder->add('next', FlowNextType::class);
-        $builder->add('finish', FlowFinishType::class);
+        $builder->add('previous', PreviousFlowType::class);
+        $builder->add('next', NextFlowType::class);
+        $builder->add('finish', FinishFlowType::class);
 
         if ($options['with_reset']) {
-            $builder->add('reset', FlowResetType::class);
+            $builder->add('reset', ResetFlowType::class);
         }
     }
 

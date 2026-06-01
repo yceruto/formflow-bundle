@@ -5,7 +5,7 @@ namespace Yceruto\FormFlowBundle\Tests\Integration\App\FormFlowBasic\Form\Type;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowType;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
-use Yceruto\FormFlowBundle\Form\Flow\Type\FlowNavigatorType;
+use Yceruto\FormFlowBundle\Form\Flow\Type\NavigatorFlowType;
 use Yceruto\FormFlowBundle\Tests\Integration\App\FormFlowBasic\Form\Data\MultistepDto;
 
 class MultistepType extends AbstractFlowType
@@ -16,7 +16,7 @@ class MultistepType extends AbstractFlowType
         $builder->addStep('step2', Step2Type::class);
         $builder->addStep('step3', Step3Type::class);
 
-        $builder->add('navigator', FlowNavigatorType::class);
+        $builder->add('navigator', NavigatorFlowType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
