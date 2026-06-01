@@ -19,38 +19,38 @@ use Yceruto\FormFlowBundle\Form\Flow\StepAccessor\StepAccessorInterface;
 class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
 {
     /**
-     * @var array<string, FlowStepBuilderInterface>
+     * @var array<string, StepFlowBuilderConfigInterface>
      */
     private array $steps = [];
     private array $initialOptions = [];
     private DataStorageInterface $dataStorage;
     private StepAccessorInterface $stepAccessor;
 
-    public function createStepGroup(string $name): FlowStepBuilderInterface
+    public function createStepGroup(string $name): StepFlowBuilderConfigInterface
     {
         if ($this->locked) {
             throw new BadMethodCallException('FormFlowBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowConfigInterface instance.');
         }
 
-        return (new FlowStepBuilder($name))->setGroup(true);
+        return (new StepFlowBuilder($name))->setGroup(true);
     }
 
-    public function createStep(string $name, string $type = FormType::class, array $options = []): FlowStepBuilderInterface
+    public function createStep(string $name, string $type = FormType::class, array $options = []): StepFlowBuilderConfigInterface
     {
         if ($this->locked) {
             throw new BadMethodCallException('FormFlowBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowConfigInterface instance.');
         }
 
-        return new FlowStepBuilder($name, $type, $options);
+        return new StepFlowBuilder($name, $type, $options);
     }
 
-    public function addStep(FlowStepBuilderInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static
+    public function addStep(StepFlowBuilderConfigInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static
     {
         if ($this->locked) {
             throw new BadMethodCallException('FormFlowBuilder methods cannot be accessed anymore once the builder is turned into a FormFlowConfigInterface instance.');
         }
 
-        if ($name instanceof FlowStepBuilderInterface) {
+        if ($name instanceof StepFlowBuilderConfigInterface) {
             $this->steps[$name->getName()] = $name;
 
             return $this;
@@ -90,7 +90,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
         return false;
     }
 
-    public function getStep(string $name): FlowStepBuilderInterface
+    public function getStep(string $name): StepFlowBuilderConfigInterface
     {
         if (isset($this->steps[$name])) {
             return $this->steps[$name];
@@ -222,7 +222,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
             throw new InvalidArgumentException('Steps not configured.');
         }
 
-        uasort($this->steps, static fn (FlowStepBuilderInterface $a, FlowStepBuilderInterface $b) => $b->getPriority() <=> $a->getPriority());
+        uasort($this->steps, static fn (StepFlowBuilderConfigInterface $a, StepFlowBuilderConfigInterface $b) => $b->getPriority() <=> $a->getPriority());
 
         $config = $this->getFormConfig();
         $currentStep = $this->resolveCurrentStep();
@@ -230,7 +230,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
         $step = $this->getStep($currentStep);
         $this->add($step->getName(), $step->getType(), $step->getOptions());
 
-        $cursor = new FlowCursor($config->getSteps(), $currentStep);
+        $cursor = new FormFlowCursor($config->getSteps(), $currentStep);
         $this->pruneActionButtons($this, $cursor);
 
         return new FormFlow($config, $cursor);
@@ -273,7 +273,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
         throw new LogicException('No navigable step found. All steps are groups or skipped.');
     }
 
-    private function pruneActionButtons(FormBuilderInterface $builder, FlowCursor $cursor): void
+    private function pruneActionButtons(FormBuilderInterface $builder, FormFlowCursor $cursor): void
     {
         foreach ($builder->all() as $child) {
             if ($child->count() > 0) {
@@ -282,7 +282,7 @@ class FormFlowBuilder extends FormBuilder implements FormFlowBuilderInterface
                 continue;
             }
 
-            if (!$child instanceof FlowButtonBuilder || !\is_callable($include = $child->getOption('include_if'))) {
+            if (!$child instanceof ButtonFlowBuilder || !\is_callable($include = $child->getOption('include_if'))) {
                 continue;
             }
 

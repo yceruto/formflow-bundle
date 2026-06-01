@@ -5,7 +5,7 @@ namespace Yceruto\FormFlowBundle\Tests\Integration\App\FormFlowBasic\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Yceruto\FormFlowBundle\Form\Flow\Type\FlowNextType;
+use Yceruto\FormFlowBundle\Form\Flow\Type\NextFlowType;
 use Yceruto\FormFlowBundle\Tests\Integration\App\FormFlowBasic\Form\Data\MultistepDto;
 
 class Step2Type extends AbstractType
@@ -15,7 +15,7 @@ class Step2Type extends AbstractType
         $builder->add('field21');
         $builder->add('field22');
 
-        $builder->add('skip', FlowNextType::class, [
+        $builder->add('skip', NextFlowType::class, [
             'clear_submission' => true,
         ]);
     }

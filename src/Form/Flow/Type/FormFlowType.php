@@ -16,9 +16,9 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowType;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\DataStorageInterface;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\NullDataStorage;
-use Yceruto\FormFlowBundle\Form\Flow\FlowButtonInterface;
-use Yceruto\FormFlowBundle\Form\Flow\FlowCursor;
-use Yceruto\FormFlowBundle\Form\Flow\FlowStepConfigInterface;
+use Yceruto\FormFlowBundle\Form\Flow\ButtonFlowInterface;
+use Yceruto\FormFlowBundle\Form\Flow\FormFlowCursor;
+use Yceruto\FormFlowBundle\Form\Flow\StepFlowConfigInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowInterface;
 use Yceruto\FormFlowBundle\Form\Flow\StepAccessor\PropertyPathStepAccessor;
@@ -90,17 +90,17 @@ class FormFlowType extends AbstractFlowType
         $flow = $event->getForm();
         $button = $flow->getClickedButton();
 
-        if ($button instanceof FlowButtonInterface && $button->isClearSubmission()) {
+        if ($button instanceof ButtonFlowInterface && $button->isClearSubmission()) {
             $event->setData([]);
         }
     }
 
     /**
-     * @param array<string, FlowStepConfigInterface> $steps
+     * @param array<string, StepFlowConfigInterface> $steps
      *
      * @return array<string, array<string, mixed>>
      */
-    private function buildStepsVars(array $steps, FlowCursor $cursor, mixed $viewData, int $level = 0): array
+    private function buildStepsVars(array $steps, FormFlowCursor $cursor, mixed $viewData, int $level = 0): array
     {
         $tree = [];
         $index = 0;

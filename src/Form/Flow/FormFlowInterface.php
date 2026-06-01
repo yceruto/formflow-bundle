@@ -11,7 +11,7 @@ interface FormFlowInterface extends FormInterface
     /**
      * Returns the button used to submit the form.
      */
-    public function getClickedButton(): FlowButtonInterface|FormInterface|ClickableInterface|null;
+    public function getClickedButton(): ButtonFlowInterface|FormInterface|ClickableInterface|null;
 
     /**
      * Resets the flow by clearing stored data and setting the cursor to the initial step.
@@ -48,7 +48,7 @@ interface FormFlowInterface extends FormInterface
     /**
      * Returns the cursor that tracks the current position in the flow.
      */
-    public function getCursor(): FlowCursor;
+    public function getCursor(): FormFlowCursor;
 
     /**
      * Returns the configuration for this flow.

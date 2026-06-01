@@ -4,7 +4,7 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 
-interface FlowStepBuilderInterface extends FlowStepConfigInterface
+interface StepFlowBuilderConfigInterface extends StepFlowConfigInterface
 {
     /**
      * Returns the form type class name for the step.
@@ -47,7 +47,7 @@ interface FlowStepBuilderInterface extends FlowStepConfigInterface
     public function removeStep(string $name): static;
 
     /**
-     * Returns a FlowStepConfigInterface instance for the step.
+     * Returns a StepFlowConfigInterface instance for the step.
      */
-    public function getStepConfig(): FlowStepConfigInterface;
+    public function getStepConfig(): StepFlowConfigInterface;
 }

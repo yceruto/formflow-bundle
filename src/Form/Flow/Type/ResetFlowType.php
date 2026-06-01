@@ -4,11 +4,11 @@ namespace Yceruto\FormFlowBundle\Form\Flow\Type;
 
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowButtonType;
-use Yceruto\FormFlowBundle\Form\Flow\FlowButtonInterface;
+use Yceruto\FormFlowBundle\Form\Flow\AbstractButtonFlowType;
+use Yceruto\FormFlowBundle\Form\Flow\ButtonFlowInterface;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowInterface;
 
-class FlowResetType extends AbstractFlowButtonType
+class ResetFlowType extends AbstractButtonFlowType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -18,7 +18,7 @@ class FlowResetType extends AbstractFlowButtonType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'handler' => fn (mixed $data, FlowButtonInterface $button, FormFlowInterface $flow) => $flow->reset(),
+            'handler' => fn (mixed $data, ButtonFlowInterface $button, FormFlowInterface $flow) => $flow->reset(),
             'clear_submission' => true,
         ]);
     }

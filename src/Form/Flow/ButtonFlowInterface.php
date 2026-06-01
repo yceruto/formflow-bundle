@@ -5,7 +5,7 @@ namespace Yceruto\FormFlowBundle\Form\Flow;
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\FormInterface;
 
-interface FlowButtonInterface extends FormInterface, ClickableInterface
+interface ButtonFlowInterface extends FormInterface, ClickableInterface
 {
     /**
      * Executes the callable handler.

@@ -7,12 +7,12 @@ use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormTypeInterface;
 
-class FlowStepBuilder implements FlowStepBuilderInterface
+class StepFlowBuilder implements StepFlowBuilderConfigInterface
 {
     private bool $locked = false;
     private int $priority = 0;
     private ?\Closure $skip = null;
-    /** @var array<string, FlowStepBuilderInterface> */
+    /** @var array<string, StepFlowBuilderConfigInterface> */
     private array $children = [];
     private bool $group = false;
 
@@ -34,7 +34,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
     public function getType(): string
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
         return $this->type;
@@ -43,7 +43,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
     public function getOptions(): array
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
         return $this->options;
@@ -57,7 +57,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
     public function setPriority(int $priority): static
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
         $this->priority = $priority;
@@ -82,7 +82,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
     public function setSkip(?\Closure $skip): static
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
         $this->skip = $skip;
@@ -93,7 +93,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
     public function setGroup(bool $group): static
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
         $this->group = $group;
@@ -106,19 +106,19 @@ class FlowStepBuilder implements FlowStepBuilderInterface
         return $this->group;
     }
 
-    public function addStep(FlowStepBuilderInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static
+    public function addStep(StepFlowBuilderConfigInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
-        if ($name instanceof FlowStepBuilderInterface) {
+        if ($name instanceof StepFlowBuilderConfigInterface) {
             $this->children[$name->getName()] = $name;
 
             return $this;
         }
 
-        $this->children[$name] = (new FlowStepBuilder($name, $type, $options))
+        $this->children[$name] = (new StepFlowBuilder($name, $type, $options))
             ->setSkip($skip ? $skip(...) : null)
             ->setPriority($priority);
 
@@ -152,7 +152,7 @@ class FlowStepBuilder implements FlowStepBuilderInterface
         return false;
     }
 
-    public function getStep(string $name): FlowStepConfigInterface
+    public function getStep(string $name): StepFlowConfigInterface
     {
         if (isset($this->children[$name])) {
             return $this->children[$name];
@@ -169,17 +169,17 @@ class FlowStepBuilder implements FlowStepBuilderInterface
         throw new InvalidArgumentException(\sprintf('Sub step "%s" does not exist in "%s" step.', $name, $this->name));
     }
 
-    public function getStepConfig(): FlowStepConfigInterface
+    public function getStepConfig(): StepFlowConfigInterface
     {
         if ($this->locked) {
-            throw new BadMethodCallException('FlowStepBuilder methods cannot be accessed anymore once the builder is turned into a FlowStepConfigInterface instance.');
+            throw new BadMethodCallException('StepFlowBuilder methods cannot be accessed anymore once the builder is turned into a StepFlowConfigInterface instance.');
         }
 
         // This method should be idempotent, so clone the builder
         $config = clone $this;
         $config->locked = true;
 
-        uasort($config->children, static fn (FlowStepBuilderInterface $a, FlowStepBuilderInterface $b) => $b->getPriority() <=> $a->getPriority());
+        uasort($config->children, static fn (StepFlowBuilderConfigInterface $a, StepFlowBuilderConfigInterface $b) => $b->getPriority() <=> $a->getPriority());
 
         foreach ($config->children as $name => $step) {
             $config->children[$name] = $step->getStepConfig();

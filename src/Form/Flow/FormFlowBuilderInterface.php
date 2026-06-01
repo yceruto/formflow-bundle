@@ -15,17 +15,17 @@ interface FormFlowBuilderInterface extends FormBuilderInterface, FormFlowConfigI
     /**
      * Creates a new step builder marked as a group.
      */
-    public function createStepGroup(string $name): FlowStepBuilderInterface;
+    public function createStepGroup(string $name): StepFlowBuilderConfigInterface;
 
     /**
      * Creates a new step builder.
      */
-    public function createStep(string $name, string $type = FormType::class, array $options = []): FlowStepBuilderInterface;
+    public function createStep(string $name, string $type = FormType::class, array $options = []): StepFlowBuilderConfigInterface;
 
     /**
      * Adds a step to the form flow.
      */
-    public function addStep(FlowStepBuilderInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static;
+    public function addStep(StepFlowBuilderConfigInterface|string $name, string $type = FormType::class, array $options = [], ?callable $skip = null, int $priority = 0): static;
 
     /**
      * Removes a step from the form flow.
@@ -35,12 +35,12 @@ interface FormFlowBuilderInterface extends FormBuilderInterface, FormFlowConfigI
     /**
      * Returns a step builder by name.
      */
-    public function getStep(string $name): FlowStepBuilderInterface;
+    public function getStep(string $name): StepFlowBuilderConfigInterface;
 
     /**
      * Returns all step builders.
      *
-     * @return array<string, FlowStepBuilderInterface>
+     * @return array<string, StepFlowBuilderConfigInterface>
      */
     public function getSteps(): array;
 

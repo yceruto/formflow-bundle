@@ -4,24 +4,24 @@ namespace Yceruto\FormFlowBundle\Tests\Flow;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
-use Yceruto\FormFlowBundle\Form\Flow\FlowCursor;
-use Yceruto\FormFlowBundle\Form\Flow\FlowStepBuilder;
-use Yceruto\FormFlowBundle\Form\Flow\FlowStepConfigInterface;
+use Yceruto\FormFlowBundle\Form\Flow\FormFlowCursor;
+use Yceruto\FormFlowBundle\Form\Flow\StepFlowBuilder;
+use Yceruto\FormFlowBundle\Form\Flow\StepFlowConfigInterface;
 
-class FlowCursorTest extends TestCase
+class FormFlowCursorTest extends TestCase
 {
     private const array STEPS = ['personal', 'professional', 'account'];
 
     /**
      * @param list<string> $names
      *
-     * @return array<string, FlowStepConfigInterface>
+     * @return array<string, StepFlowConfigInterface>
      */
     private static function createSteps(array $names = self::STEPS): array
     {
         $configs = [];
         foreach ($names as $name) {
-            $configs[$name] = (new FlowStepBuilder($name))->getStepConfig();
+            $configs[$name] = (new StepFlowBuilder($name))->getStepConfig();
         }
 
         return $configs;
@@ -29,20 +29,20 @@ class FlowCursorTest extends TestCase
 
     private static function createNestedSteps(): array
     {
-        $personal = (new FlowStepBuilder('personal'))
+        $personal = (new StepFlowBuilder('personal'))
             ->addStep('name')
             ->addStep('contact');
 
         return [
-            'intro' => (new FlowStepBuilder('intro'))->getStepConfig(),
+            'intro' => (new StepFlowBuilder('intro'))->getStepConfig(),
             'personal' => $personal->getStepConfig(),
-            'summary' => (new FlowStepBuilder('summary'))->getStepConfig(),
+            'summary' => (new StepFlowBuilder('summary'))->getStepConfig(),
         ];
     }
 
     public function testConstructorWithValidStep()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'personal');
+        $cursor = new FormFlowCursor(self::createSteps(), 'personal');
 
         $this->assertSame(self::STEPS, $cursor->getSteps());
         $this->assertSame('personal', $cursor->getCurrentStep());
@@ -53,26 +53,26 @@ class FlowCursorTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Step "invalid" does not exist. Available steps are: "personal", "professional", "account".');
 
-        new FlowCursor(self::createSteps(), 'invalid');
+        new FormFlowCursor(self::createSteps(), 'invalid');
     }
 
     public function testConstructorWithDeprecatedStringList()
     {
-        $cursor = new FlowCursor(self::STEPS, 'personal');
+        $cursor = new FormFlowCursor(self::STEPS, 'personal');
 
         $this->assertSame(self::STEPS, $cursor->getSteps());
     }
 
     public function testGetSteps()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'personal');
+        $cursor = new FormFlowCursor(self::createSteps(), 'personal');
 
         $this->assertSame(self::STEPS, $cursor->getSteps());
     }
 
     public function testGetTotalSteps()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'personal');
+        $cursor = new FormFlowCursor(self::createSteps(), 'personal');
 
         $this->assertSame(3, $cursor->getTotalSteps());
     }
@@ -81,19 +81,19 @@ class FlowCursorTest extends TestCase
     {
         $steps = self::createSteps();
 
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertSame(0, $cursor->getStepIndex());
 
-        $cursor = new FlowCursor($steps, 'professional');
+        $cursor = new FormFlowCursor($steps, 'professional');
         $this->assertSame(1, $cursor->getStepIndex());
 
-        $cursor = new FlowCursor($steps, 'account');
+        $cursor = new FormFlowCursor($steps, 'account');
         $this->assertSame(2, $cursor->getStepIndex());
     }
 
     public function testGetFirstStep()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'professional');
+        $cursor = new FormFlowCursor(self::createSteps(), 'professional');
 
         $this->assertSame('personal', $cursor->getFirstStep());
     }
@@ -103,28 +103,28 @@ class FlowCursorTest extends TestCase
         $steps = self::createSteps();
 
         // First step has no previous step
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertNull($cursor->getPreviousStep());
 
         // Middle step has previous step
-        $cursor = new FlowCursor($steps, 'professional');
+        $cursor = new FormFlowCursor($steps, 'professional');
         $this->assertSame('personal', $cursor->getPreviousStep());
 
         // Last step has previous step
-        $cursor = new FlowCursor($steps, 'account');
+        $cursor = new FormFlowCursor($steps, 'account');
         $this->assertSame('professional', $cursor->getPreviousStep());
     }
 
     public function testGetCurrentStep()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'professional');
+        $cursor = new FormFlowCursor(self::createSteps(), 'professional');
 
         $this->assertSame('professional', $cursor->getCurrentStep());
     }
 
     public function testWithCurrentStep()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'personal');
+        $cursor = new FormFlowCursor(self::createSteps(), 'personal');
 
         $newCursor = $cursor->withCurrentStep('professional');
 
@@ -144,21 +144,21 @@ class FlowCursorTest extends TestCase
         $steps = self::createSteps();
 
         // First step has next step
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertSame('professional', $cursor->getNextStep());
 
         // Middle step has next step
-        $cursor = new FlowCursor($steps, 'professional');
+        $cursor = new FormFlowCursor($steps, 'professional');
         $this->assertSame('account', $cursor->getNextStep());
 
         // Last step has no next step
-        $cursor = new FlowCursor($steps, 'account');
+        $cursor = new FormFlowCursor($steps, 'account');
         $this->assertNull($cursor->getNextStep());
     }
 
     public function testGetLastStep()
     {
-        $cursor = new FlowCursor(self::createSteps(), 'personal');
+        $cursor = new FormFlowCursor(self::createSteps(), 'personal');
 
         $this->assertSame('account', $cursor->getLastStep());
     }
@@ -168,11 +168,11 @@ class FlowCursorTest extends TestCase
         $steps = self::createSteps();
 
         // First step
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertTrue($cursor->isFirstStep());
 
         // Not first step
-        $cursor = new FlowCursor($steps, 'professional');
+        $cursor = new FormFlowCursor($steps, 'professional');
         $this->assertFalse($cursor->isFirstStep());
     }
 
@@ -181,11 +181,11 @@ class FlowCursorTest extends TestCase
         $steps = self::createSteps();
 
         // Not last step
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertFalse($cursor->isLastStep());
 
         // Last step
-        $cursor = new FlowCursor($steps, 'account');
+        $cursor = new FormFlowCursor($steps, 'account');
         $this->assertTrue($cursor->isLastStep());
     }
 
@@ -194,15 +194,15 @@ class FlowCursorTest extends TestCase
         $steps = self::createSteps();
 
         // First position cannot move a previous step
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertFalse($cursor->canMoveBack());
 
         // Middle position can move a previous step
-        $cursor = new FlowCursor($steps, 'professional');
+        $cursor = new FormFlowCursor($steps, 'professional');
         $this->assertTrue($cursor->canMoveBack());
 
         // Last step can move a previous step
-        $cursor = new FlowCursor($steps, 'account');
+        $cursor = new FormFlowCursor($steps, 'account');
         $this->assertTrue($cursor->canMoveBack());
     }
 
@@ -211,22 +211,22 @@ class FlowCursorTest extends TestCase
         $steps = self::createSteps();
 
         // First position can move next step
-        $cursor = new FlowCursor($steps, 'personal');
+        $cursor = new FormFlowCursor($steps, 'personal');
         $this->assertTrue($cursor->canMoveNext());
 
         // Middle position can move next step
-        $cursor = new FlowCursor($steps, 'professional');
+        $cursor = new FormFlowCursor($steps, 'professional');
         $this->assertTrue($cursor->canMoveNext());
 
         // Last position cannot move the next step
-        $cursor = new FlowCursor($steps, 'account');
+        $cursor = new FormFlowCursor($steps, 'account');
         $this->assertFalse($cursor->canMoveNext());
     }
 
     public function testCursorWithSingleStep()
     {
         $steps = ['single'];
-        $cursor = new FlowCursor(self::createSteps($steps), 'single');
+        $cursor = new FormFlowCursor(self::createSteps($steps), 'single');
 
         $this->assertSame('single', $cursor->getCurrentStep());
         $this->assertTrue($cursor->isFirstStep());
@@ -244,7 +244,7 @@ class FlowCursorTest extends TestCase
 
     public function testNestedStepsAreFlattened()
     {
-        $cursor = new FlowCursor(self::createNestedSteps(), 'intro');
+        $cursor = new FormFlowCursor(self::createNestedSteps(), 'intro');
 
         $this->assertSame(['intro', 'personal', 'name', 'contact', 'summary'], $cursor->getSteps());
         $this->assertSame(5, $cursor->getTotalSteps());
@@ -257,27 +257,27 @@ class FlowCursorTest extends TestCase
         // Forward: intro → personal → name → contact → summary
         // Backward: summary → contact → name → personal → intro
 
-        $cursor = new FlowCursor($nestedSteps, 'intro');
+        $cursor = new FormFlowCursor($nestedSteps, 'intro');
         $this->assertTrue($cursor->isFirstStep());
         $this->assertNull($cursor->getPreviousStep());
         $this->assertSame('personal', $cursor->getNextStep());
 
-        $cursor = new FlowCursor($nestedSteps, 'personal');
+        $cursor = new FormFlowCursor($nestedSteps, 'personal');
         $this->assertSame('intro', $cursor->getPreviousStep());
         $this->assertSame('name', $cursor->getNextStep());
         $this->assertSame(1, $cursor->getStepIndex());
 
-        $cursor = new FlowCursor($nestedSteps, 'name');
+        $cursor = new FormFlowCursor($nestedSteps, 'name');
         $this->assertSame('personal', $cursor->getPreviousStep());
         $this->assertSame('contact', $cursor->getNextStep());
         $this->assertSame(2, $cursor->getStepIndex());
 
-        $cursor = new FlowCursor($nestedSteps, 'contact');
+        $cursor = new FormFlowCursor($nestedSteps, 'contact');
         $this->assertSame('name', $cursor->getPreviousStep());
         $this->assertSame('summary', $cursor->getNextStep());
         $this->assertSame(3, $cursor->getStepIndex());
 
-        $cursor = new FlowCursor($nestedSteps, 'summary');
+        $cursor = new FormFlowCursor($nestedSteps, 'summary');
         $this->assertTrue($cursor->isLastStep());
         $this->assertSame('contact', $cursor->getPreviousStep());
         $this->assertNull($cursor->getNextStep());
@@ -286,19 +286,19 @@ class FlowCursorTest extends TestCase
 
     public function testNestedStepsWithMultipleForests()
     {
-        $personal = (new FlowStepBuilder('personal'))
+        $personal = (new StepFlowBuilder('personal'))
             ->addStep('name')
             ->addStep('email');
-        $work = (new FlowStepBuilder('work'))
+        $work = (new StepFlowBuilder('work'))
             ->addStep('company')
             ->addStep('role');
 
-        $cursor = new FlowCursor([
-            'intro' => (new FlowStepBuilder('intro'))->getStepConfig(),
+        $cursor = new FormFlowCursor([
+            'intro' => (new StepFlowBuilder('intro'))->getStepConfig(),
             'personal' => $personal->getStepConfig(),
-            'middle' => (new FlowStepBuilder('middle'))->getStepConfig(),
+            'middle' => (new StepFlowBuilder('middle'))->getStepConfig(),
             'work' => $work->getStepConfig(),
-            'summary' => (new FlowStepBuilder('summary'))->getStepConfig(),
+            'summary' => (new StepFlowBuilder('summary'))->getStepConfig(),
         ], 'intro');
 
         $this->assertSame(['intro', 'personal', 'name', 'email', 'middle', 'work', 'company', 'role', 'summary'], $cursor->getSteps());
@@ -312,26 +312,26 @@ class FlowCursorTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Step "invalid" does not exist. Available steps are: "intro", "personal", "name", "contact", "summary".');
 
-        new FlowCursor(self::createNestedSteps(), 'invalid');
+        new FormFlowCursor(self::createNestedSteps(), 'invalid');
     }
 
     public function testStringKeyNestedStepsWithDepth()
     {
-        $position = (new FlowStepBuilder('position'))
+        $position = (new StepFlowBuilder('position'))
             ->addStep('title')
             ->addStep('department');
-        $work = (new FlowStepBuilder('work'))
+        $work = (new StepFlowBuilder('work'))
             ->addStep('company')
             ->addStep($position);
-        $personal = (new FlowStepBuilder('personal'))
+        $personal = (new StepFlowBuilder('personal'))
             ->addStep('name')
             ->addStep('contact');
 
-        $cursor = new FlowCursor([
-            'intro' => (new FlowStepBuilder('intro'))->getStepConfig(),
+        $cursor = new FormFlowCursor([
+            'intro' => (new StepFlowBuilder('intro'))->getStepConfig(),
             'personal' => $personal->getStepConfig(),
             'work' => $work->getStepConfig(),
-            'summary' => (new FlowStepBuilder('summary'))->getStepConfig(),
+            'summary' => (new StepFlowBuilder('summary'))->getStepConfig(),
         ], 'intro');
 
         $this->assertSame([
@@ -344,21 +344,21 @@ class FlowCursorTest extends TestCase
 
     public function testGetCurrentNode()
     {
-        $cursor = new FlowCursor(self::createNestedSteps(), 'name');
+        $cursor = new FormFlowCursor(self::createNestedSteps(), 'name');
 
         $this->assertSame('name', $cursor->getCurrentStepNode()->getName());
     }
 
     public function testGetNode()
     {
-        $cursor = new FlowCursor(self::createNestedSteps(), 'intro');
+        $cursor = new FormFlowCursor(self::createNestedSteps(), 'intro');
 
         $this->assertSame('contact', $cursor->getStepNode('contact')->getName());
     }
 
     public function testGetNodeThrowsForInvalidName()
     {
-        $cursor = new FlowCursor(self::createNestedSteps(), 'intro');
+        $cursor = new FormFlowCursor(self::createNestedSteps(), 'intro');
 
         $this->expectException(InvalidArgumentException::class);
         $cursor->getStepNode('invalid');
@@ -366,7 +366,7 @@ class FlowCursorTest extends TestCase
 
     public function testGetRoots()
     {
-        $cursor = new FlowCursor(self::createNestedSteps(), 'intro');
+        $cursor = new FormFlowCursor(self::createNestedSteps(), 'intro');
 
         $this->assertCount(3, $cursor->getRootStepNodes());
         $this->assertSame('intro', $cursor->getRootStepNodes()[0]->getName());
@@ -376,24 +376,24 @@ class FlowCursorTest extends TestCase
     {
         $steps = self::createNestedSteps();
 
-        $this->assertNull((new FlowCursor($steps, 'intro'))->getParentStep());
-        $this->assertNull((new FlowCursor($steps, 'personal'))->getParentStep());
-        $this->assertSame('personal', (new FlowCursor($steps, 'name'))->getParentStep());
-        $this->assertSame('personal', (new FlowCursor($steps, 'contact'))->getParentStep());
+        $this->assertNull((new FormFlowCursor($steps, 'intro'))->getParentStep());
+        $this->assertNull((new FormFlowCursor($steps, 'personal'))->getParentStep());
+        $this->assertSame('personal', (new FormFlowCursor($steps, 'name'))->getParentStep());
+        $this->assertSame('personal', (new FormFlowCursor($steps, 'contact'))->getParentStep());
     }
 
     public function testGetChildSteps()
     {
         $steps = self::createNestedSteps();
 
-        $this->assertSame([], (new FlowCursor($steps, 'intro'))->getChildSteps());
-        $this->assertSame(['name', 'contact'], (new FlowCursor($steps, 'personal'))->getChildSteps());
-        $this->assertSame([], (new FlowCursor($steps, 'name'))->getChildSteps());
+        $this->assertSame([], (new FormFlowCursor($steps, 'intro'))->getChildSteps());
+        $this->assertSame(['name', 'contact'], (new FormFlowCursor($steps, 'personal'))->getChildSteps());
+        $this->assertSame([], (new FormFlowCursor($steps, 'name'))->getChildSteps());
     }
 
     public function testWithCurrentStepSharesForest()
     {
-        $cursor = new FlowCursor(self::createNestedSteps(), 'intro');
+        $cursor = new FormFlowCursor(self::createNestedSteps(), 'intro');
         $newCursor = $cursor->withCurrentStep('summary');
 
         $this->assertSame($cursor->getRootStepNodes(), $newCursor->getRootStepNodes());
@@ -404,74 +404,74 @@ class FlowCursorTest extends TestCase
     {
         $steps = self::createGroupSteps();
 
-        $this->assertTrue((new FlowCursor($steps, 'a1'))->isFirstStep());
-        $this->assertFalse((new FlowCursor($steps, 'a2'))->isFirstStep());
-        $this->assertFalse((new FlowCursor($steps, 'b'))->isFirstStep());
-        $this->assertFalse((new FlowCursor($steps, 'c1'))->isFirstStep());
+        $this->assertTrue((new FormFlowCursor($steps, 'a1'))->isFirstStep());
+        $this->assertFalse((new FormFlowCursor($steps, 'a2'))->isFirstStep());
+        $this->assertFalse((new FormFlowCursor($steps, 'b'))->isFirstStep());
+        $this->assertFalse((new FormFlowCursor($steps, 'c1'))->isFirstStep());
     }
 
     public function testIsLastStepWithGroupParent()
     {
         $steps = self::createGroupSteps();
 
-        $this->assertTrue((new FlowCursor($steps, 'c1'))->isLastStep());
-        $this->assertFalse((new FlowCursor($steps, 'b'))->isLastStep());
-        $this->assertFalse((new FlowCursor($steps, 'a2'))->isLastStep());
-        $this->assertFalse((new FlowCursor($steps, 'a1'))->isLastStep());
+        $this->assertTrue((new FormFlowCursor($steps, 'c1'))->isLastStep());
+        $this->assertFalse((new FormFlowCursor($steps, 'b'))->isLastStep());
+        $this->assertFalse((new FormFlowCursor($steps, 'a2'))->isLastStep());
+        $this->assertFalse((new FormFlowCursor($steps, 'a1'))->isLastStep());
     }
 
     public function testCanMoveBackWithGroupParent()
     {
         $steps = self::createGroupSteps();
 
-        $this->assertFalse((new FlowCursor($steps, 'a1'))->canMoveBack());
-        $this->assertTrue((new FlowCursor($steps, 'a2'))->canMoveBack());
-        $this->assertTrue((new FlowCursor($steps, 'b'))->canMoveBack());
-        $this->assertTrue((new FlowCursor($steps, 'c1'))->canMoveBack());
+        $this->assertFalse((new FormFlowCursor($steps, 'a1'))->canMoveBack());
+        $this->assertTrue((new FormFlowCursor($steps, 'a2'))->canMoveBack());
+        $this->assertTrue((new FormFlowCursor($steps, 'b'))->canMoveBack());
+        $this->assertTrue((new FormFlowCursor($steps, 'c1'))->canMoveBack());
     }
 
     public function testCanMoveNextWithGroupParent()
     {
         $steps = self::createGroupSteps();
 
-        $this->assertFalse((new FlowCursor($steps, 'c1'))->canMoveNext());
-        $this->assertTrue((new FlowCursor($steps, 'b'))->canMoveNext());
-        $this->assertTrue((new FlowCursor($steps, 'a2'))->canMoveNext());
-        $this->assertTrue((new FlowCursor($steps, 'a1'))->canMoveNext());
+        $this->assertFalse((new FormFlowCursor($steps, 'c1'))->canMoveNext());
+        $this->assertTrue((new FormFlowCursor($steps, 'b'))->canMoveNext());
+        $this->assertTrue((new FormFlowCursor($steps, 'a2'))->canMoveNext());
+        $this->assertTrue((new FormFlowCursor($steps, 'a1'))->canMoveNext());
     }
 
     public function testGetFirstStepWithGroupRoot()
     {
         $steps = self::createGroupSteps();
 
-        $this->assertSame('a1', (new FlowCursor($steps, 'b'))->getFirstStep());
+        $this->assertSame('a1', (new FormFlowCursor($steps, 'b'))->getFirstStep());
     }
 
     public function testGetLastStepWithGroupTail()
     {
         $steps = self::createGroupSteps();
 
-        $this->assertSame('c1', (new FlowCursor($steps, 'b'))->getLastStep());
+        $this->assertSame('c1', (new FormFlowCursor($steps, 'b'))->getLastStep());
     }
 
     /**
      * Creates steps: a(group) -> [a1, a2], b, c(group) -> [c1]
      *
-     * @return array<string, FlowStepConfigInterface>
+     * @return array<string, StepFlowConfigInterface>
      */
     private static function createGroupSteps(): array
     {
-        $a = (new FlowStepBuilder('a'))
+        $a = (new StepFlowBuilder('a'))
             ->setGroup(true)
             ->addStep('a1')
             ->addStep('a2');
-        $c = (new FlowStepBuilder('c'))
+        $c = (new StepFlowBuilder('c'))
             ->setGroup(true)
             ->addStep('c1');
 
         return [
             'a' => $a->getStepConfig(),
-            'b' => (new FlowStepBuilder('b'))->getStepConfig(),
+            'b' => (new StepFlowBuilder('b'))->getStepConfig(),
             'c' => $c->getStepConfig(),
         ];
     }

@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Yceruto\FormFlowBundle\Form\Flow\AbstractFlowType;
 use Yceruto\FormFlowBundle\Form\Flow\DataStorage\InMemoryDataStorage;
 use Yceruto\FormFlowBundle\Form\Flow\FormFlowBuilderInterface;
-use Yceruto\FormFlowBundle\Form\Flow\Type\FlowNavigatorType;
+use Yceruto\FormFlowBundle\Form\Flow\Type\NavigatorFlowType;
 
 class NestedStepsFlowType extends AbstractFlowType
 {
@@ -33,7 +33,7 @@ class NestedStepsFlowType extends AbstractFlowType
             )
             ->addStep('stepC', TextType::class);
 
-        $builder->add('navigator', FlowNavigatorType::class, ['with_reset' => true]);
+        $builder->add('navigator', NavigatorFlowType::class, ['with_reset' => true]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

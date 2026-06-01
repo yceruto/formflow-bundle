@@ -7,7 +7,7 @@ use Symfony\Component\Form\Exception\LogicException;
 /**
  * Represents a node in the step flow tree (forest graph).
  */
-class FlowStepNode
+class StepFlowNode
 {
     /** @var list<self> */
     private array $children = [];
@@ -50,7 +50,7 @@ class FlowStepNode
     /**
      * Builds a forest from step configurations.
      *
-     * @param array<string, FlowStepConfigInterface> $steps Ordered step configs
+     * @param array<string, StepFlowConfigInterface> $steps Ordered step configs
      *
      * @return list<self>
      */
