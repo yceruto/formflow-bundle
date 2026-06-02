@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.4.1
+-----
+ * Add `form_flow_*` Twig helper functions to access values from `FormFlowCursor`
+
 0.4.0
 -----
  * [Breaking Changes] Renamed the Form Flow classes to follow Symfony's native naming convention (`<Thing>Flow` instead of `Flow<Thing>`). The `Yceruto\FormFlowBundle\Form\Flow` namespace is unchanged; only class names changed:
