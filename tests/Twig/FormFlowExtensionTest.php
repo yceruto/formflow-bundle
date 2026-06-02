@@ -3,12 +3,15 @@
 namespace Yceruto\FormFlowBundle\Tests\Twig;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\Forms;
+use Symfony\Component\Form\FormView;
 use Yceruto\FormFlowBundle\Form\ResolvedFormTypeFactory;
 use Yceruto\FormFlowBundle\Tests\Fixtures\Flow\Data\UserSignUp;
+use Yceruto\FormFlowBundle\Tests\Fixtures\Flow\NestedStepsFlowType;
 use Yceruto\FormFlowBundle\Tests\Fixtures\Flow\UserSignUpType;
 use Yceruto\FormFlowBundle\Twig\FormFlowExtension;
 
@@ -90,7 +93,105 @@ class FormFlowExtensionTest extends TestCase
         $this->extension->getFormFlowCurrentStep($view);
     }
 
-    private function createFlowView(string $currentStep): \Symfony\Component\Form\FormView
+    public function testRootSteps()
+    {
+        $view = $this->createNestedFlowView();
+
+        self::assertSame(['stepA', 'stepB', 'stepC'], $this->extension->getFormFlowRootSteps($view));
+    }
+
+    public function testParentStep()
+    {
+        $view = $this->createNestedFlowView();
+
+        // Defaults to the current step (stepA1, the first visitable step).
+        self::assertSame('stepA', $this->extension->getFormFlowParentStep($view));
+        self::assertSame('stepA', $this->extension->getFormFlowParentStep($view, 'stepA1'));
+        self::assertSame('stepB1', $this->extension->getFormFlowParentStep($view, 'stepB11'));
+        self::assertNull($this->extension->getFormFlowParentStep($view, 'stepC'));
+    }
+
+    public function testChildSteps()
+    {
+        $view = $this->createNestedFlowView();
+
+        self::assertSame(['stepA1', 'stepA2', 'stepA3'], $this->extension->getFormFlowChildSteps($view, 'stepA'));
+        self::assertSame(['stepB1', 'stepB2'], $this->extension->getFormFlowChildSteps($view, 'stepB'));
+        self::assertSame(['stepB11', 'stepB12'], $this->extension->getFormFlowChildSteps($view, 'stepB1'));
+        self::assertSame([], $this->extension->getFormFlowChildSteps($view, 'stepC'));
+    }
+
+    public function testAncestorSteps()
+    {
+        $view = $this->createNestedFlowView();
+
+        self::assertSame(['stepA'], $this->extension->getFormFlowAncestorSteps($view, 'stepA1'));
+        self::assertSame(['stepB', 'stepB1'], $this->extension->getFormFlowAncestorSteps($view, 'stepB11'));
+        self::assertSame([], $this->extension->getFormFlowAncestorSteps($view, 'stepC'));
+    }
+
+    public function testStepDepth()
+    {
+        $view = $this->createNestedFlowView();
+
+        self::assertSame(0, $this->extension->getFormFlowStepDepth($view, 'stepA'));
+        self::assertSame(1, $this->extension->getFormFlowStepDepth($view, 'stepA1'));
+        self::assertSame(1, $this->extension->getFormFlowStepDepth($view, 'stepB1'));
+        self::assertSame(2, $this->extension->getFormFlowStepDepth($view, 'stepB11'));
+        self::assertSame(0, $this->extension->getFormFlowStepDepth($view, 'stepC'));
+    }
+
+    public function testIsGroup()
+    {
+        $view = $this->createNestedFlowView();
+
+        self::assertTrue($this->extension->isFormFlowGroup($view, 'stepA'));
+        // stepB1 has children but was not created as a group.
+        self::assertFalse($this->extension->isFormFlowGroup($view, 'stepB1'));
+        self::assertFalse($this->extension->isFormFlowGroup($view, 'stepC'));
+    }
+
+    public function testStepInfo()
+    {
+        $view = $this->createNestedFlowView();
+
+        $info = $this->extension->getFormFlowStepInfo($view, 'stepB1');
+
+        self::assertSame('stepB1', $info['name']);
+        self::assertSame(1, $info['level']);
+        self::assertFalse($info['is_group']);
+        self::assertFalse($info['is_skipped']);
+        self::assertArrayHasKey('stepB11', $info['children']);
+        self::assertArrayHasKey('stepB12', $info['children']);
+
+        // The current step (stepA1) is flagged as such in the computed tree.
+        self::assertTrue($this->extension->getFormFlowStepInfo($view, 'stepA1')['is_current_step']);
+
+        // Defaults to the current step when no step name is given.
+        self::assertSame('stepA1', $this->extension->getFormFlowStepInfo($view)['name']);
+    }
+
+    public function testStepInfoForUnknownStepThrows()
+    {
+        $view = $this->createNestedFlowView();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Step "unknown" does not exist in the flow view.');
+
+        $this->extension->getFormFlowStepInfo($view, 'unknown');
+    }
+
+    public function testNestedHelpersOnFormWithoutFlowThrow()
+    {
+        $view = $this->factory->create(FormType::class)->createView();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The "form_flow_*" functions can only be used on a form flow view');
+
+        $this->extension->getFormFlowRootSteps($view);
+    }
+
+    private function createFlowView(string $currentStep): FormView
     {
         $data = new UserSignUp();
         $data->worker = true;
@@ -99,5 +200,10 @@ class FormFlowExtensionTest extends TestCase
         return $this->factory->create(UserSignUpType::class, $data)
             ->getStepForm()
             ->createView();
+    }
+
+    private function createNestedFlowView(): FormView
+    {
+        return $this->factory->create(NestedStepsFlowType::class, [])->createView();
     }
 }

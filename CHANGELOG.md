@@ -4,6 +4,7 @@ CHANGELOG
 0.4.1
 -----
  * Add `form_flow_*` Twig helper functions to access values from `FormFlowCursor`
+ * Add `form_flow_*` Twig helper functions to work with nested steps
 
 0.4.0
 -----

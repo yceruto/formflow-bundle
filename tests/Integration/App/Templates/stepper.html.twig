@@ -1,0 +1,22 @@
+<div class="flow">
+    <nav class="breadcrumb">
+        {%- for step in form_flow_ancestor_steps(form) %}<span class="ancestor">{{ step }}</span> / {% endfor -%}
+        <span class="current">{{ form_flow_current_step(form) }}</span>
+    </nav>
+
+    {% macro tree(nodes) %}
+        {%- import _self as self -%}
+        <ul>
+            {%- for name, step in nodes %}
+                <li class="step{{ step.is_current_step ? ' is-current' }}{{ step.is_group ? ' is-group' }}" data-level="{{ step.level }}">{{ name }}
+                    {%- if step.visible_children is not empty %}{{ self.tree(step.visible_children) }}{% endif -%}
+                </li>
+            {% endfor -%}
+        </ul>
+    {% endmacro %}
+
+    {%- import _self as self -%}
+    <div class="stepper">{{ self.tree(form.vars.visible_steps) }}</div>
+
+    {{ form(form) }}
+</div>
