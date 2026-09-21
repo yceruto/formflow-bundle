@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+0.4.2
+-----
+ * Create the flow data from `empty_data` when no initial data is passed
+ * Fall back to the first step when the stored step no longer exists
+ * Validate the target step before moving a flow back to it
+ * Restart a flow from empty data after a reset when no initial data was passed
+ * Fix the handling of skipped steps in the step tree; a skipped step now takes its whole subtree with it
+
 0.4.1
 -----
  * Add `form_flow_*` Twig helper functions to access values from `FormFlowCursor`

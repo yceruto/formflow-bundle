@@ -18,10 +18,14 @@ class FormFlowCursor
     /**
      * @param array<string, StepFlowConfigInterface>|list<string> $steps       Step configs or a flat list of step names
      * @param string                                              $currentStep The name of the current step
+     * @param mixed                                               $data        The flow data used to evaluate the skip conditions
+     *                                                                         of the previous steps; without it, only groups are
+     *                                                                         considered non-navigable
      */
     public function __construct(
         array $steps,
         string $currentStep,
+        private readonly mixed $data = null,
     ) {
         $first = reset($steps);
 
@@ -97,7 +101,7 @@ class FormFlowCursor
     public function getFirstStep(): string
     {
         foreach ($this->steps as $name) {
-            if (!$this->stepMap[$name]->isGroup()) {
+            if ($this->isNavigable($this->stepMap[$name])) {
                 return $name;
             }
         }
@@ -145,15 +149,7 @@ class FormFlowCursor
 
     public function isFirstStep(): bool
     {
-        $node = $this->currentStep;
-        while (null !== $prev = $node->getPreviousInTraversal()) {
-            if (!$prev->isGroup()) {
-                return false;
-            }
-            $node = $prev;
-        }
-
-        return true;
+        return !$this->canMoveBack();
     }
 
     public function isLastStep(): bool
@@ -173,7 +169,7 @@ class FormFlowCursor
     {
         $node = $this->currentStep;
         while (null !== $prev = $node->getPreviousInTraversal()) {
-            if (!$prev->isGroup()) {
+            if ($this->isNavigable($prev)) {
                 return true;
             }
             $node = $prev;
@@ -215,5 +211,14 @@ class FormFlowCursor
     public function getRootStepNodes(): array
     {
         return $this->roots;
+    }
+
+    private function isNavigable(StepFlowNode $node): bool
+    {
+        if (null === $this->data) {
+            return !$node->isGroup();
+        }
+
+        return !$node->isGroupOrSkipped($this->data);
     }
 }
